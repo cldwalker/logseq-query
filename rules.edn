@@ -1,0 +1,19 @@
+[{:desc "Join to block by property or property value"
+  :rule
+  [(block-property ?b ?property-name ?property-value)
+   [?b :block/properties ?p]
+   [(get ?p ?property-name) ?property-value]]}
+
+ {:desc "Join to page by name, property or property value"
+  :rule
+  [(page-name-property ?b ?block-name ?property-name ?property-value)
+   [?b :block/original-name ?block-name]
+   [?b :block/properties ?p]
+   [(get ?p ?property-name) ?property-values]
+   [(contains? ?property-values ?property-value)]]}
+
+ {:desc "Blocks by type"
+  :rule
+  [(block-by-type ?b ?type)
+   [?b :block/properties ?p]
+   [(get ?p :type) ?type]]}]

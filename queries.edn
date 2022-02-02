@@ -1,0 +1,29 @@
+{:block-property
+ {:query [:find (pull ?b2 [*])
+          :in $ ?type %
+          :where
+          (block-property ?b :type ?type)
+          (block-property ?b :name ?name)
+          (block-property ?b2 :author ?name)]
+  :args "person"}
+
+ :page-property
+ {:query [:find (pull ?things [*])
+          :in $ ?region %
+          :where
+          (page-name-property ?_b ?country :region ?region)
+          (page-name-property ?_b2 ?author :country-of-origin ?country)
+          (page-name-property ?things ?_name :authored-by ?author)]
+  :args "Middle East"}
+
+ :page-names
+ {:query [:find ?n
+          :in $ %
+          :where
+          [?_b :block/name ?n]]}
+
+ :blocks-by-type
+ {:query [:find (pull ?b [*])
+          :in $ ?type %
+          :where (block-by-type ?b ?type)]
+  :args "person"}}

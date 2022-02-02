@@ -1,0 +1,12 @@
+{:paths ["src"]
+ :deps {datascript-transit/datascript-transit {:mvn/version "0.3.0"
+                                               :exclusions [datascript/datascript]}}
+ :tasks
+ {rules
+  cldwalker.logseq-query.tasks/rules
+
+  q
+  cldwalker.logseq-query.tasks/q
+
+  graphs
+  cldwalker.logseq-query.tasks/graphs}}

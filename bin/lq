@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if command -v bb-datascript &> /dev/null
+then
+  BABASHKA_DATASCRIPT=1 bb-datascript --config $PWD/bb.edn $@
+else
+  bb --config $PWD/bb.edn $@
+fi
