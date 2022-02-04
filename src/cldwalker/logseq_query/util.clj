@@ -3,19 +3,25 @@
             [clojure.pprint :as pprint]
             [babashka.fs :as fs]))
 
+(defn logseq-query-path
+  [filename]
+  (str (fs/path (fs/parent (fs/parent (System/getenv "_")))
+            filename)))
+
 (defn get-rules
   []
-  (-> "rules.edn" slurp edn/read-string))
+  (-> "rules.edn" logseq-query-path slurp edn/read-string))
 
 (defn get-queries
   []
-  (-> "queries.edn" slurp edn/read-string))
+  (-> "queries.edn" logseq-query-path slurp edn/read-string))
 
 (defn get-config
   []
-  (if (fs/exists? "config.edn")
-    (-> "config.edn" slurp edn/read-string)
-    {}))
+  (let [config-file (logseq-query-path "config.edn")]
+    (if (fs/exists? config-file)
+     (-> config-file slurp edn/read-string)
+     {})))
 
 (defn get-graph-paths
   []

@@ -12,6 +12,8 @@
 (defn q
   [& args]
   (let [args (cond-> {:query (first args)}
+                     (seq (rest args))
+                     (assoc :args (rest args))
                      (System/getenv "GRAPH")
                      (assoc :graph (System/getenv "GRAPH")))]
     (if (System/getenv "BABASHKA_DATASCRIPT")
@@ -22,3 +24,7 @@
 (defn graphs
   []
   (prn (map util/full-path->graph (util/get-graph-paths))))
+
+(defn queries
+  []
+  (prn (keys (util/get-queries))))

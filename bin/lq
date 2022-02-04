@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
+ROOT_DIR="$(dirname "$0")/.."
 if command -v bb-datascript &> /dev/null
 then
-  BABASHKA_DATASCRIPT=1 bb-datascript --config $PWD/bb.edn $@
+  BABASHKA_DATASCRIPT=1 bb-datascript --config $ROOT_DIR/bb.edn $@
 else
-  bb --config $PWD/bb.edn $@
+  bb --config $ROOT_DIR/bb.edn $@
 fi
