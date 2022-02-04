@@ -3,6 +3,7 @@
             [datascript.transit :as dt]
             [clojure.set :as set]
             [clojure.string :as str]
+            [clojure.edn :as edn]
             [cldwalker.logseq-query.util :as util]))
 
 (defn- get-graph-db
@@ -36,7 +37,7 @@
         _ (when-not query-m
             (println "Error: No query found for" query)
             (System/exit 1))
-        {:keys [find in] :as query-map} (parse-query (:query query-m))
+        {:keys [find in]} (parse-query (:query query-m))
         expected-args (set/difference (set in) #{'% '$})
         actual-args (into [] (or (seq args) (:default-args query-m)))
         _ (when-not (= (count actual-args) (count expected-args))
@@ -45,5 +46,20 @@
             (System/exit 1))
         q-args (conj actual-args rules)
         post-transduce (if (pull-or-single-binding? find) (map first) (map identity))
-        res (apply d/q query-map db q-args)]
+        res (apply d/q (:query query-m) db q-args)]
+      (prn (into [] post-transduce res))))
+
+(defn qs
+  [{:keys [query graph]}]
+  (let [graph' (or graph (:default-graph (util/get-config)))
+        db (get-graph-db graph')
+        rules (map :rule (util/get-rules))
+        query' (edn/read-string query)
+        query'' (if (keyword? (first query')) query' (conj [:where] query'))
+        {:keys [find] :as query-map} (parse-query query'')
+        query-map' (merge {:in '[$ %]
+                           :find '[(pull ?b [*])]}
+                          query-map)
+        post-transduce (if (pull-or-single-binding? find) (map first) (map identity))
+        res (d/q query-map' db rules)]
       (prn (into [] post-transduce res))))

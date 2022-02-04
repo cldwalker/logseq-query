@@ -7,6 +7,23 @@
           (block-property ?b2 :author ?name)]
   :default-args ["person"]}
 
+ :all-properties
+ {:query [:find ?prop
+          :in $ ?
+          :where
+          [?b :block/properties ?prop]
+          [(missing? $ ?b :block/name)]]}
+
+ ;; TODO
+ ; :all-block-property
+ ; {:query [:find ?b #_(pull ?b [*])
+ ;          :in $ ?k %
+ ;          :where
+ ;          [?b :block/properties ?prop]
+ ;          #_[(missing? $ ?b :block/name)]
+ ;          [(get ?prop (keyword ?k)) ?prop-v]
+ ;          #_[true]]}
+
  :page-property
  {:query [:find (pull ?things [*])
           :in $ ?region %
