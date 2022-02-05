@@ -38,4 +38,6 @@
 
 (defn queries
   []
-  (prn (keys (util/get-queries))))
+  (prn (map (fn [[k v]]
+              {:name k :desc (:desc v)})
+            (util/get-queries))))

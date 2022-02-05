@@ -1,28 +1,28 @@
 {:block-property
- {:query [:find (pull ?b2 [*])
-          :in $ ?type %
+ {:query [:find (pull ?b [*])
+          :in $ ?prop ?prop-value %
           :where
-          (block-property ?b :type ?type)
-          (block-property ?b :name ?name)
-          (block-property ?b2 :author ?name)]
-  :default-args ["person"]}
+          [(keyword ?prop) ?prop-k]
+          (block-property ?b ?prop-k ?prop-value)
+          #_(block-property ?b :name ?name)
+          #_(block-property ?b2 :author ?name)]
+  :desc "List all blocks that have property equal to property value"
+  :default-args ["type" "person"]}
 
  :all-properties
  {:query [:find ?prop
-          :in $ ?
+          :in $ %
           :where
           [?b :block/properties ?prop]
-          [(missing? $ ?b :block/name)]]}
+          [(missing? $ ?b :block/name)]]
+  :desc "List all properties"}
 
- ;; TODO
- ; :all-block-property
- ; {:query [:find ?b #_(pull ?b [*])
- ;          :in $ ?k %
- ;          :where
- ;          [?b :block/properties ?prop]
- ;          #_[(missing? $ ?b :block/name)]
- ;          [(get ?prop (keyword ?k)) ?prop-v]
- ;          #_[true]]}
+ :all-block-property
+ {:query [:find ?prop
+          :in $ ?ks %
+          :where
+          (all-block-property ?prop ?ks)]
+  :desc "List all properties for given property"}
 
  :page-property
  {:query [:find (pull ?things [*])
@@ -31,16 +31,12 @@
           (page-name-property ?_b ?country :region ?region)
           (page-name-property ?_b2 ?author :country-of-origin ?country)
           (page-name-property ?things ?_name :authored-by ?author)]
+  :desc "Practice page property query"
   :default-args ["Middle East"]}
 
  :page-names
  {:query [:find ?n
           :in $ %
           :where
-          [?_b :block/name ?n]]}
-
- :blocks-by-type
- {:query [:find (pull ?b [*])
-          :in $ ?type %
-          :where (block-by-type ?b ?type)]
-  :default-args ["person"]}}
+          [?_b :block/name ?n]]
+  :desc "List all page names"}}

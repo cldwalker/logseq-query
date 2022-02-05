@@ -4,6 +4,14 @@
    [?b :block/properties ?p]
    [(get ?p ?property-name) ?property-value]]}
 
+ {:desc "All blocks with given property"
+  :rule
+  [(all-block-property ?prop ?ks)
+   [?b :block/properties ?prop]
+   [(missing? $ ?b :block/name)]
+   [(keyword ?ks) ?k]
+   [(get ?prop ?k)]]}
+
  {:desc "Join to page by name, property or property value"
   :rule
   [(page-name-property ?b ?block-name ?property-name ?property-value)
@@ -11,9 +19,4 @@
    [?b :block/properties ?p]
    [(get ?p ?property-name) ?property-values]
    [(contains? ?property-values ?property-value)]]}
-
- {:desc "Blocks by type"
-  :rule
-  [(block-by-type ?b ?type)
-   [?b :block/properties ?p]
-   [(get ?p :type) ?type]]}]
+ ]
