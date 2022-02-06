@@ -4,6 +4,7 @@
             [clojure.set :as set]
             [clojure.string :as str]
             [clojure.edn :as edn]
+            [babashka.tasks :refer [shell]]
             [cldwalker.logseq-query.util :as util]))
 
 (defn- get-graph-db
@@ -27,9 +28,27 @@
        (or (not (coll? (first find)))
            (and (coll? (first find)) (= 'pull (ffirst find))))))
 
+(defn- print-table [rows]
+  (-> (shell {:out :string} "echo" (pr-str rows))
+      (shell "bb-table")))
+
+(defn print-rows
+  [rows options]
+  (if (:table options)
+      (if (:block/uuid (first rows))
+        (print-table (map #(merge {:id (:db/id %)} (:block/properties %))
+                                 rows))
+        (print-table rows))
+      (if (:puget options)
+        (-> (shell {:out :string} "echo" (pr-str rows))
+            (shell "puget"))
+        (prn rows))))
+
 (defn q
-  [{:keys [query graph args]}]
-  (let [graph' (or graph (:default-graph (util/get-config)))
+  [{:keys [arguments options]}]
+  (let [[query & args] arguments
+        {:keys [graph]} options
+        graph' (or graph (:default-graph (util/get-config)))
         db (get-graph-db graph')
         rules (map :rule (util/get-rules))
         queries (util/get-queries)
@@ -46,8 +65,9 @@
             (System/exit 1))
         q-args (conj actual-args rules)
         post-transduce (if (pull-or-single-binding? find) (map first) (map identity))
-        res (apply d/q (:query query-m) db q-args)]
-      (prn (into [] post-transduce res))))
+        res (apply d/q (:query query-m) db q-args)
+        res' (into [] post-transduce res)]
+    (print-rows res' options)))
 
 (defn qs
   [{:keys [query graph]}]
