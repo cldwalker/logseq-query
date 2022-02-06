@@ -25,21 +25,34 @@
   [["-h" "--help" "Print help"]
    ["-g" "--graph GRAPH" "Choose a graph"]
    ["-t" "--table" "Render results in a table"]
-   ["-p" "--puget" "Colorize results with puget"]])
+   ["-p" "--puget" "Colorize results with puget"]
+   ["-c" "--count" "Print count of results"]])
 
 (defn q
   [& args]
   (cli/run-command q* args q-cli-options))
 
+(def qs-cli-options
+  [["-h" "--help" "Print help"]
+   ["-g" "--graph GRAPH" "Choose a graph"]
+   ["-t" "--table" "Render results in a table"]
+   ["-p" "--puget" "Colorize results with puget"]
+   ["-c" "--count" "Print count of results"]
+   ["-n" "--pretend" "Prints the full query that would execute"]])
+
+(defn qs*
+  [{:keys [options arguments summary] :as args}]
+  (cond (or (:help options) (empty? arguments))
+    (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
+    (System/getenv "BABASHKA_DATASCRIPT")
+    ((requiring-resolve 'cldwalker.logseq-query.datascript/qs) args)
+    :else
+    (clojure (format "-X cldwalker.logseq-query.datascript/qs '%s'"
+                     (pr-str args)))))
+
 (defn qs
   [& args]
-  (let [args (cond-> {:query (str/join " " args)}
-                     (System/getenv "GRAPH")
-                     (assoc :graph (System/getenv "GRAPH")))]
-    (if (System/getenv "BABASHKA_DATASCRIPT")
-      ((requiring-resolve 'cldwalker.logseq-query.datascript/qs) args)
-      (clojure (format "-X cldwalker.logseq-query.datascript/qs '%s'"
-                       (pr-str args))))))
+  (cli/run-command qs* args qs-cli-options))
 
 (defn graphs
   []

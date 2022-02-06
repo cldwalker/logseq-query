@@ -4,6 +4,7 @@
             [clojure.set :as set]
             [clojure.string :as str]
             [clojure.edn :as edn]
+            [clojure.pprint :as pprint]
             [babashka.tasks :refer [shell]]
             [cldwalker.logseq-query.util :as util]))
 
@@ -32,7 +33,7 @@
   (-> (shell {:out :string} "echo" (pr-str rows))
       (shell "bb-table")))
 
-(defn print-rows
+(defn print-results
   [rows options]
   (if (:table options)
       (if (:block/uuid (first rows))
@@ -43,6 +44,15 @@
         (-> (shell {:out :string} "echo" (pr-str rows))
             (shell "puget"))
         (prn rows))))
+
+(defn- q-and-print-results
+  [query query-args options {:keys [find]}]
+  (let [post-transduce (if (pull-or-single-binding? find) (map first) (map identity))
+        res (apply d/q query query-args)
+        res' (cond-> (into [] post-transduce res)
+                     (:count options)
+                     count)]
+    (print-results res' options)))
 
 (defn q
   [{:keys [arguments options]}]
@@ -63,23 +73,22 @@
             (println "Error: Wrong number of arguments")
             (println (format "Usage: lq q %s" (str/join " " expected-args)))
             (System/exit 1))
-        q-args (conj actual-args rules)
-        post-transduce (if (pull-or-single-binding? find) (map first) (map identity))
-        res (apply d/q (:query query-m) db q-args)
-        res' (into [] post-transduce res)]
-    (print-rows res' options)))
+        q-args (conj actual-args rules)]
+    (q-and-print-results (:query query-m) (into [db] q-args) options {:find find})))
 
 (defn qs
-  [{:keys [query graph]}]
-  (let [graph' (or graph (:default-graph (util/get-config)))
-        db (get-graph-db graph')
+  [{:keys [arguments options]}]
+  (let [query (str/join " " arguments)
+        graph (or (:graph options) (:default-graph (util/get-config)))
+        db (get-graph-db graph)
         rules (map :rule (util/get-rules))
         query' (edn/read-string query)
         query'' (if (keyword? (first query')) query' (conj [:where] query'))
         {:keys [find] :as query-map} (parse-query query'')
         query-map' (merge {:in '[$ %]
                            :find '[(pull ?b [*])]}
-                          query-map)
-        post-transduce (if (pull-or-single-binding? find) (map first) (map identity))
-        res (d/q query-map' db rules)]
-      (prn (into [] post-transduce res))))
+                          query-map)]
+    (if (:pretend options)
+      (do (print "Query: ")
+        (pprint/pprint query-map'))
+      (q-and-print-results query-map' [db rules] options {:find find}))))
