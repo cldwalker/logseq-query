@@ -6,6 +6,7 @@
             [clojure.edn :as edn]
             [clojure.pprint :as pprint]
             [babashka.tasks :refer [shell]]
+            [cldwalker.logseq-query.cli :as cli]
             [cldwalker.logseq-query.util :as util]))
 
 (defn- get-graph-db
@@ -46,27 +47,33 @@
         (prn rows))))
 
 (defn- q-and-print-results
-  [query query-args options {:keys [find]}]
+  [query query-args options {:keys [find result-transform]}]
   (let [post-transduce (if (pull-or-single-binding? find) (map first) (map identity))
         res (apply d/q query query-args)
         res' (cond-> (into [] post-transduce res)
                      (:count options)
-                     count)]
+                     count
+                     result-transform
+                     ((fn [x] (eval (list result-transform x)))))]
     (print-results res' options)))
 
 (defn q
   [{:keys [arguments options]}]
-  (let [[query & args] arguments
+  (let [[query-id & args] arguments
         {:keys [graph]} options
         graph' (or graph (:default-graph (util/get-config)))
         db (get-graph-db graph')
         rules (map :rule (util/get-rules))
         queries (util/get-queries)
-        query-m (get queries (keyword query))
+        query-m (get queries (keyword query-id))
         _ (when-not query-m
-            (println "Error: No query found for" query)
+            (println "Error: No query found for" query-id)
             (System/exit 1))
-        {:keys [find in]} (parse-query (:query query-m))
+        query (if (keyword? (:query query-m))
+                (or (:query (get queries (:query query-m)))
+                    (cli/error (str "No query found for " (:query query-m))))
+                (:query query-m))
+        {:keys [find in]} (parse-query query)
         expected-args (set/difference (set in) #{'% '$})
         actual-args (into [] (or (seq args) (:default-args query-m)))
         _ (when-not (= (count actual-args) (count expected-args))
@@ -74,7 +81,11 @@
             (println (format "Usage: lq q %s" (str/join " " expected-args)))
             (System/exit 1))
         q-args (conj actual-args rules)]
-    (q-and-print-results (:query query-m) (into [db] q-args) options {:find find})))
+    (q-and-print-results query
+                         (into [db] q-args)
+                         options
+                         {:find find
+                          :result-transform (:result-transform query-m)})))
 
 (defn qs
   [{:keys [arguments options]}]

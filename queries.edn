@@ -17,12 +17,31 @@
           [(missing? $ ?b :block/name)]]
   :desc "List all properties"}
 
+ :all-property-counts
+ {:query :all-properties
+  :result-transform (fn [result]
+                      (->> result
+                           (map (fn [m] (zipmap (keys m) (repeat 1))))
+                           (apply merge-with +)
+                           (sort-by val >)))
+  :desc "Counts for all properties"}
+
  :all-block-property
  {:query [:find ?prop
           :in $ ?ks %
           :where
           (all-block-property ?prop ?ks)]
   :desc "List all properties for given property"}
+
+ :property-counts
+ {:query :all-block-property
+  :result-transform (fn [result]
+                      (->> result
+                           (reduce (fn [acc e]
+                                     (update-in acc [(:type e)] (fnil inc 0))) {})
+                           (sort-by val >)))
+  :default-args ["type"]
+  :desc "Counts for given properties"}
 
  :page-property
  {:query [:find (pull ?things [*])

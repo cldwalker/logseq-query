@@ -1,7 +1,6 @@
 (ns cldwalker.logseq-query.tasks
   (:require [cldwalker.logseq-query.util :as util]
             [cldwalker.logseq-query.cli :as cli]
-            [clojure.string :as str]
             [babashka.tasks :refer [clojure]]))
 
 (defn rules
@@ -60,6 +59,7 @@
 
 (defn queries
   []
-  (prn (map (fn [[k v]]
-              {:name k :desc (:desc v)})
-            (util/get-queries))))
+  (util/print-table
+   (map (fn [[k v]]
+          {:name k :desc (:desc v)})
+        (util/get-queries))))
