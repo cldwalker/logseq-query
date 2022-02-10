@@ -37,19 +37,30 @@
 
 (defn print-results
   [rows options]
-  (if (:table options)
-      (if (:block/uuid (first rows))
-        (print-table (map #(merge {:id (:db/id %)} (:block/properties %))
-                                 rows))
-        (print-table rows))
-      (if (:puget options)
-        (-> (shell {:out :string} "echo" (pr-str rows))
-            (shell "puget"))
-        (prn rows))))
+  (cond
+    (:table options)
+    (if (:block/uuid (first rows))
+      (print-table (map #(merge {:id (:db/id %)} (:block/properties %))
+                        rows))
+      (print-table rows))
+
+    (:puget options)
+    (-> (shell {:out :string} "echo" (pr-str rows))
+        (shell "puget"))
+    (:block-content options)
+    (run! println (map #(->> % :block/content (str "- ")) rows))
+    :else
+    (prn rows)))
 
 (defn- q-and-print-results
   [query query-args options {:keys [find result-transform]}]
-  (let [post-transduce (if (pull-or-single-binding? find) (map first) (map identity))
+  (let [post-transduce (if (pull-or-single-binding? find)
+                         (map #(let [e (first %)]
+                                 (if (map? e)
+                                   ;; Dissoc order until I see why it's causing an error later
+                                   (dissoc e :block/properties-order)
+                                   e)))
+                         (map identity))
         res (apply d/q query query-args)
         res' (cond-> (into [] post-transduce res)
                      (:count options)

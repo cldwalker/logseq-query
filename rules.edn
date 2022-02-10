@@ -6,7 +6,7 @@
 
  {:desc "All blocks with given property"
   :rule
-  [(all-block-property ?prop ?ks)
+  [(all-block-property ?b ?prop ?ks)
    [?b :block/properties ?prop]
    [(missing? $ ?b :block/name)]
    [(keyword ?ks) ?k]
