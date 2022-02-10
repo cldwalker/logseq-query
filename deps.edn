@@ -1,4 +1,5 @@
 {:deps
  {datascript/datascript {:mvn/version "1.3.8"}
   datascript-transit/datascript-transit {:mvn/version "0.3.0"}
+  io.lambdaforge/datalog-parser {:mvn/version "0.1.9"}
   babashka/fs {:mvn/version "0.1.2"}}}

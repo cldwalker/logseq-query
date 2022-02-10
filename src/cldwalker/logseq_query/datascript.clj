@@ -1,6 +1,7 @@
 (ns cldwalker.logseq-query.datascript
   (:require [datascript.core :as d]
             [datascript.transit :as dt]
+            [datalog.parser :as parser]
             [clojure.set :as set]
             [clojure.string :as str]
             [clojure.edn :as edn]
@@ -99,6 +100,7 @@
         query-map' (merge {:in '[$ %]
                            :find '[(pull ?b [*])]}
                           query-map)]
+    (parser/parse query-map')
     (if (:pretend options)
       (do (print "Query: ")
         (pprint/pprint query-map'))
