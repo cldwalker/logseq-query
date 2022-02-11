@@ -39,6 +39,7 @@
    ["-t" "--table" "Render results in a table"]
    ["-p" "--puget" "Colorize results with puget"]
    ["-c" "--count" "Print count of results"]
+   ["-C" "--block-content" "Only prints :block/content of result"]
    ["-n" "--pretend" "Prints the full query that would execute"]
    ["-s" "--silence" "Silence noisy d/q error"]])
 

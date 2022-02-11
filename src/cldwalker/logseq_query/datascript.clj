@@ -109,23 +109,38 @@
                                        {:find find
                                         :result-transform (:result-transform query-m)})))))
 
+(defn- add-find-and-in-defaults
+  "Adds defaults to :find and :in if they are not present in vec query"
+  [query]
+  (case (first query)
+    :where
+    (into [:find '(pull ?b [*]) :in '$ '%]
+          query)
+    :in
+    (into [:find '(pull ?b [*])] query)
+    :find
+    (if (= :in (nth query 2))
+      query
+      (apply concat
+        [(take 2 query)
+         [:in '$ '%]
+         (drop 2 query)]))))
+
 (defn qs
   [{:keys [arguments options]}]
-  (let [query (str/join " " arguments)
+  (let [query-string (str/join " " arguments)
         graph (or (:graph options) (:default-graph (util/get-config)))
         db (get-graph-db graph)
         rules (map :rule (util/get-rules))
-        query' (edn/read-string query)
-        query'' (if (keyword? (first query')) query' (conj [:where] query'))
-        {:keys [find] :as query-map} (parse-query query'')
-        query-map' (merge {:in '[$ %]
-                           :find '[(pull ?b [*])]}
-                          query-map)]
-    (parser/parse query-map')
+        query (edn/read-string query-string)
+        query' (add-find-and-in-defaults
+                (if (keyword? (first query)) query (conj [:where] query)))
+        {:keys [find]} (parse-query query')]
+    (parser/parse query')
     (if (:pretend options)
       (do (print "Query: ")
-        (pprint/pprint query-map'))
+        (pprint/pprint query'))
       (wrap-query
        options
        (fn []
-         (q-and-print-results query-map' [db rules] options {:find find}))))))
+         (q-and-print-results query' [db rules] options {:find find}))))))
