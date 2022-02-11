@@ -69,6 +69,14 @@
                      ((fn [x] (eval (list result-transform x)))))]
     (print-results res' options)))
 
+(defn- wrap-query
+  "To optionally silence unhelpful db barf for certain d/q"
+  [options f]
+  (if (:silence options)
+    (try (f)
+      (catch Exception e (prn (.getMessage e))))
+    (f)))
+
 (defn q
   [{:keys [arguments options]}]
   (let [[query-id & args] arguments
@@ -93,11 +101,13 @@
             (println (format "Usage: lq q %s" (str/join " " expected-args)))
             (System/exit 1))
         q-args (conj actual-args rules)]
-    (q-and-print-results query
-                         (into [db] q-args)
-                         options
-                         {:find find
-                          :result-transform (:result-transform query-m)})))
+    (wrap-query options
+                (fn []
+                  (q-and-print-results query
+                                       (into [db] q-args)
+                                       options
+                                       {:find find
+                                        :result-transform (:result-transform query-m)})))))
 
 (defn qs
   [{:keys [arguments options]}]
@@ -115,4 +125,7 @@
     (if (:pretend options)
       (do (print "Query: ")
         (pprint/pprint query-map'))
-      (q-and-print-results query-map' [db rules] options {:find find}))))
+      (wrap-query
+       options
+       (fn []
+         (q-and-print-results query-map' [db rules] options {:find find}))))))

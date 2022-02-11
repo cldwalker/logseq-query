@@ -58,4 +58,26 @@
           :in $ %
           :where
           [?_b :block/name ?n]]
-  :desc "List all page names"}}
+  :desc "List all page names"}
+
+ :todos
+ {:query [:find (pull ?b
+                      [* :block/parent {:block/page [:db/id :block/name]}])
+          :in $ %
+          :where
+          [?b :block/marker ?_marker]]
+  :desc "List all todos"}
+
+ :todos-by-page
+ {:query :todos
+  :result-transform (fn [result]
+                      (->> (update-vals
+                            (group-by (fn [x] (get-in x [:block/page :block/name])) result) count)
+                           (sort-by val >)))
+  :desc "todos count by page"}
+
+ :todos-by-marker
+ {:query :todos
+  :result-transform (fn [result]
+                      (update-vals (group-by :block/marker result) count))
+  :desc "todos count by marker"}}
