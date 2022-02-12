@@ -14,7 +14,8 @@
   [graph]
   (let [file (some #(when (= graph (util/full-path->graph %)) %)
                    (util/get-graph-paths))]
-    (-> file slurp dt/read-transit-str)))
+    (or (some-> file slurp dt/read-transit-str)
+        (cli/error (str "No graph found for " (pr-str graph))))))
 
 ;; From earlier version of datascript
 (defn- parse-query [query]

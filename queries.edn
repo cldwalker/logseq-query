@@ -80,4 +80,21 @@
  {:query :todos
   :result-transform (fn [result]
                       (update-vals (group-by :block/marker result) count))
-  :desc "todos count by marker"}}
+  :desc "todos count by marker"}
+
+ :content-search
+ {:query [:find (pull ?b [*])
+          :in $ ?query %
+          :where
+          [?b :block/content ?content]
+          [(clojure.string/includes? ?content ?query)]]
+  :desc "Full text search on :block/content"}
+
+ :property-search
+ {:query [:find (pull ?b [*])
+          :in $ ?prop ?query %
+          :where
+          [(keyword ?prop) ?prop-k]
+          (block-property ?b ?prop-k ?prop-value)
+          [(clojure.string/includes? ?prop-value ?query)]]
+  :desc "Full text search on property"}}
