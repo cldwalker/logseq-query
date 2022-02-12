@@ -82,6 +82,16 @@
                       (update-vals (group-by :block/marker result) count))
   :desc "todos count by marker"}
 
+ :todo-marker
+ {:query [:find (pull ?b [*])
+          :in $ ?markers %
+          :where
+          [?b :block/marker ?marker]
+          [(contains? ?markers ?marker)]]
+  :default-args [#{"TODO" "DOING"}]
+  :args-transform (fn [args]
+                    (set (map (comp clojure.string/upper-case name) args)))}
+
  :content-search
  {:query [:find (pull ?b [*])
           :in $ ?query %

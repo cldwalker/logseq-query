@@ -81,12 +81,12 @@
 (defn q
   [{:keys [arguments options]}]
   (let [[query-id & args] arguments
+        ; args [#{"TODO" "DOING"}]
         {:keys [graph]} options
         graph' (or graph (:default-graph (util/get-config)))
         db (get-graph-db graph')
-        rules (map :rule (util/get-rules))
         queries (util/get-queries)
-        query-m (get queries (keyword query-id))
+        {:keys [args-transform] :as query-m} (get queries (keyword query-id))
         _ (when-not query-m
             (println "Error: No query found for" query-id)
             (System/exit 1))
@@ -94,6 +94,9 @@
                 (or (:query (get queries (:query query-m)))
                     (cli/error (str "No query found for " (:query query-m))))
                 (:query query-m))
+        args (if (and (seq args) args-transform)
+               [(eval (list args-transform (vec args)))]
+               args)
         {:keys [find in]} (parse-query query)
         expected-args (set/difference (set in) #{'% '$})
         actual-args (into [] (or (seq args) (:default-args query-m)))
@@ -101,7 +104,9 @@
             (println "Error: Wrong number of arguments")
             (println (format "Usage: lq q %s" (str/join " " expected-args)))
             (System/exit 1))
+        rules (map :rule (util/get-rules))
         q-args (conj actual-args rules)]
+    (parser/parse query)
     (wrap-query options
                 (fn []
                   (q-and-print-results query
