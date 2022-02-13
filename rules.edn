@@ -19,4 +19,16 @@
    [?b :block/properties ?p]
    [(get ?p ?property-name) ?property-values]
    [(contains? ?property-values ?property-value)]]}
+
+ {:desc "Todos that contain one of markers"
+  :rule
+  [(todo ?b ?markers)
+   [?b :block/marker ?marker]
+   [(contains? ?markers ?marker)]]}
+
+ {:desc "Blocks tagged with page/tag ref"
+  :rule
+  [(tag ?b ?tag)
+   [?b :block/path-refs ?b2]
+   [?b2 :block/name ?tag]]}
  ]

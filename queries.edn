@@ -107,4 +107,21 @@
           [(keyword ?prop) ?prop-k]
           (block-property ?b ?prop-k ?prop-value)
           [(clojure.string/includes? ?prop-value ?query)]]
-  :desc "Full text search on property"}}
+  :desc "Full text search on property"}
+
+ :tag-todos
+ {:query [:find (pull ?b [* {:block/refs [:db/id :block/name]}])
+          :in $ ?tag %
+          :where
+          (todo ?b #{"TODO" "DOING"})
+          (tag ?b ?tag)]
+  :default-args ["eng"]
+  :desc "List all todos for tag"}
+
+ :tag-todos-tag-cloud
+ {:query :tag-todos
+  :result-transform (fn [result]
+                      (->> result
+                           (mapcat (fn [m] (map :block/name (:block/refs m))))
+                           frequencies
+                           (sort-by val >)))}}

@@ -81,7 +81,6 @@
 (defn q
   [{:keys [arguments options]}]
   (let [[query-id & args] arguments
-        ; args [#{"TODO" "DOING"}]
         {:keys [graph]} options
         graph' (or graph (:default-graph (util/get-config)))
         db (get-graph-db graph')
