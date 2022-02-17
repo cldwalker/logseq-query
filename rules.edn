@@ -31,4 +31,9 @@
   [(tag ?b ?tag)
    [?b :block/path-refs ?b2]
    [?b2 :block/name ?tag]]}
+
+ {:desc "Search :block/content"
+  :rule [(content-search ?b ?query)
+         [?b :block/content ?content]
+         [(clojure.string/includes? ?content ?query)]]}
  ]

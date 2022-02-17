@@ -1,7 +1,6 @@
 (ns cldwalker.logseq-query.cli
   "Some of these are from bb-clis but not worth coupling yet"
-  (:require [clojure.string :as str]
-            [clojure.tools.cli :as cli]))
+  (:require [clojure.string :as str]))
 
 (defn error
   "Print error message(s) and exit"
@@ -23,7 +22,7 @@
   parsing and then passes parsed input to command fn"
   [command-fn args cli-opts & parse-opts-options]
   (let [{:keys [errors] :as parsed-input}
-        (apply cli/parse-opts args cli-opts parse-opts-options)]
+        (apply (requiring-resolve 'clojure.tools.cli/parse-opts) args cli-opts parse-opts-options)]
     (if (seq errors)
       (error (str/join "\n" (into ["Options failed to parse:"] errors)))
       (command-fn parsed-input))))

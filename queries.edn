@@ -9,29 +9,29 @@
   :desc "List all blocks that have property equal to property value"
   :default-args ["type" "person"]}
 
- :all-properties
+ :block-properties
  {:query [:find (pull ?b [*])
           :in $ %
           :where
           [?b :block/properties ?prop]
           [(missing? $ ?b :block/name)]]
-  :desc "List all properties"}
+  :desc "List all block properties"}
 
- :all-property-counts
- {:query :all-properties
+ :block-property-counts
+ {:query :block-properties
   :result-transform (fn [result]
                       (->> result
                            (map (fn [m] (zipmap (keys (:block/properties m)) (repeat 1))))
                            (apply merge-with +)
                            (sort-by val >)))
-  :desc "Counts for all properties"}
+  :desc "Counts for all block properties"}
 
  :all-block-property
  {:query [:find (pull ?b [*])
           :in $ ?ks %
           :where
-          (all-block-property ?b ?prop ?ks)]
-  :desc "List all properties for given property"}
+          (all-block-property ?b ?_prop ?ks)]
+  :desc "List blocks that have given property"}
 
  :property-counts
  {:query :all-block-property
@@ -86,18 +86,25 @@
  {:query [:find (pull ?b [*])
           :in $ ?markers %
           :where
-          [?b :block/marker ?marker]
-          [(contains? ?markers ?marker)]]
+          (todo ?b ?markers)]
   :default-args [#{"TODO" "DOING"}]
   :args-transform (fn [args]
-                    (set (map (comp clojure.string/upper-case name) args)))}
+                    (set (map (comp clojure.string/upper-case name) args)))
+  :desc "Todos that contain one of the markers"}
+
+ :todos-with-urls
+ {:query [:find (pull ?b [*])
+          :in $ %
+          :where
+          (todo ?b #{"TODO" "DOING"})
+          (content-search ?b "https")]
+  :desc "Todos with urls"}
 
  :content-search
  {:query [:find (pull ?b [*])
           :in $ ?query %
           :where
-          [?b :block/content ?content]
-          [(clojure.string/includes? ?content ?query)]]
+          (content-search ?b ?query)]
   :desc "Full text search on :block/content"}
 
  :property-search

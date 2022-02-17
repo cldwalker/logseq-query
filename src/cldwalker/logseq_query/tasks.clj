@@ -10,21 +10,28 @@
                        :desc (:desc %)))
        util/print-table))
 
+(defn- add-default-options
+  [args]
+  (update-in args [:options] #(merge (:default-options (util/get-config)) %)))
+
 (defn q*
   [{:keys [options arguments summary] :as args}]
   (cond (or (:help options) (empty? arguments))
     (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
     (System/getenv "BABASHKA_DATASCRIPT")
-    ((requiring-resolve 'cldwalker.logseq-query.datascript/q) args)
+    ((requiring-resolve 'cldwalker.logseq-query.datascript/q)
+     (add-default-options args))
     :else
     (clojure (format "-X cldwalker.logseq-query.datascript/q '%s'"
-                     (pr-str args)))))
+                     (pr-str (add-default-options args))))))
 
 (def q-cli-options
   [["-h" "--help" "Print help"]
    ["-g" "--graph GRAPH" "Choose a graph"]
    ["-t" "--table" "Render results in a table"]
+   [nil "--table-command COMMAND" "Command to run with --table"]
    ["-p" "--puget" "Colorize results with puget"]
+   ["-P" "--no-puget" :id :puget :parse-fn not]
    ["-c" "--count" "Print count of results"]
    ["-C" "--block-content" "Only prints :block/content of result"]
    ["-s" "--silence" "Silence noisy d/q error"]])
@@ -37,6 +44,7 @@
   [["-h" "--help" "Print help"]
    ["-g" "--graph GRAPH" "Choose a graph"]
    ["-t" "--table" "Render results in a table"]
+   [nil "--table-command COMMAND" "Command to run with --table"]
    ["-p" "--puget" "Colorize results with puget"]
    ["-c" "--count" "Print count of results"]
    ["-C" "--block-content" "Only prints :block/content of result"]
@@ -48,10 +56,11 @@
   (cond (or (:help options) (empty? arguments))
     (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
     (System/getenv "BABASHKA_DATASCRIPT")
-    ((requiring-resolve 'cldwalker.logseq-query.datascript/qs) args)
+    ((requiring-resolve 'cldwalker.logseq-query.datascript/qs)
+     (add-default-options args))
     :else
     (clojure (format "-X cldwalker.logseq-query.datascript/qs '%s'"
-                     (pr-str args)))))
+                     (pr-str (add-default-options args))))))
 
 (defn qs
   [& args]

@@ -6,12 +6,12 @@
             [clojure.string :as str]
             [clojure.edn :as edn]
             [clojure.pprint :as pprint]
-            [babashka.tasks :refer [shell]]
             [cldwalker.logseq-query.cli :as cli]
             [cldwalker.logseq-query.util :as util]))
 
 (defn- get-graph-db
   [graph]
+  (when (nil? graph) (cli/error (str "--graph option required")))
   (let [file (some #(when (= graph (util/full-path->graph %)) %)
                    (util/get-graph-paths))]
     (or (some-> file slurp dt/read-transit-str)
@@ -32,9 +32,11 @@
        (or (not (coll? (first find)))
            (and (coll? (first find)) (= 'pull (ffirst find))))))
 
-(defn- print-table [rows]
-  (-> (shell {:out :string} "echo" (pr-str rows))
-      (shell "bb-table")))
+(defn- print-table [rows table-command]
+  (if table-command
+    (-> (util/shell {:out :string} "echo" (pr-str rows))
+        (util/shell table-command))
+    (util/print-table rows)))
 
 (defn print-results
   [rows options]
@@ -42,16 +44,18 @@
     (:table options)
     (if (:block/uuid (first rows))
       (print-table (map #(merge {:id (:db/id %)} (:block/properties %))
-                        rows))
-      (print-table rows))
+                        rows)
+                   (:table-command options))
+      (print-table rows (:table-command options)))
 
-    (:puget options)
-    (-> (shell {:out :string} "echo" (pr-str rows))
-        (shell "puget"))
     (:block-content options)
     (run! println (map #(->> % :block/content (str "- ")) rows))
+
     :else
-    (prn rows)))
+    (if (:puget options)
+      (-> (util/shell {:out :string} "echo" (pr-str rows))
+          (util/shell "puget"))
+      (prn rows))))
 
 (defn- q-and-print-results
   [query query-args options {:keys [find result-transform]}]
@@ -81,9 +85,7 @@
 (defn q
   [{:keys [arguments options]}]
   (let [[query-id & args] arguments
-        {:keys [graph]} options
-        graph' (or graph (:default-graph (util/get-config)))
-        db (get-graph-db graph')
+        db (get-graph-db (:graph options))
         queries (util/get-queries)
         {:keys [args-transform] :as query-m} (get queries (keyword query-id))
         _ (when-not query-m
@@ -134,8 +136,7 @@
 (defn qs
   [{:keys [arguments options]}]
   (let [query-string (str/join " " arguments)
-        graph (or (:graph options) (:default-graph (util/get-config)))
-        db (get-graph-db graph)
+        db (get-graph-db (:graph options))
         rules (map :rule (util/get-rules))
         query (edn/read-string query-string)
         query' (add-find-and-in-defaults
@@ -143,8 +144,7 @@
         {:keys [find]} (parse-query query')]
     (parser/parse query')
     (if (:pretend options)
-      (do (print "Query: ")
-        (pprint/pprint query'))
+      (pprint/pprint {:query query'})
       (wrap-query
        options
        (fn []

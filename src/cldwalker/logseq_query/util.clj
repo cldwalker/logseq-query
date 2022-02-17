@@ -1,12 +1,53 @@
 (ns cldwalker.logseq-query.util
   (:require [clojure.edn :as edn]
             [clojure.pprint :as pprint]
+            [clojure.java.io :as io]
+            [babashka.process :as p]
             [babashka.fs :as fs]))
+
+(def default-opts
+  {:in :inherit
+   :out :inherit
+   :err :inherit
+   :shutdown p/destroy-tree})
+
+(defn shell
+  "Copied from babashka.impl.tasks/shell"
+  [cmd & args]
+  (let [[prev cmd args]
+        (if (and (map? cmd)
+                 (:proc cmd))
+          [cmd (first args) (rest args)]
+          [nil cmd args])
+        [opts cmd args]
+        (if (map? cmd)
+          [cmd (first args) (rest args)]
+          [nil cmd args])
+        opts (if-let [o (:out opts)]
+               (if (string? o)
+                 (update opts :out io/file)
+                 opts)
+               opts)
+        opts (if-let [o (:err opts)]
+               (if (string? o)
+                 (update opts :err io/file)
+                 opts)
+               opts)
+        opts (if prev
+               (assoc opts :in nil)
+               opts)
+        cmd (if (.exists (io/file cmd))
+              [cmd]
+              (p/tokenize cmd))
+        cmd (into cmd args)]
+    @(p/process prev cmd (merge default-opts opts))))
 
 (defn logseq-query-path
   [filename]
-  (str (fs/path (fs/parent (fs/parent (System/getenv "_")))
-            filename)))
+  ;; TODO: Fix
+  (str "./" filename)
+  #_(str (fs/path (fs/parent (fs/parent (System/getenv "_")))
+                  filename)))
 
 (defn get-rules
   []
