@@ -53,7 +53,6 @@
         invalid-unbound-rules (->> (util/get-rules)
                                    (map :rule)
                                    (mapcat lint-unbound-rule)
-                                   #_vector
                                    (remove :success))
         ;; TODO: Enable when https://github.com/lambdaforge/datalog-parser/issues/20 is addressed
         ;; Running into false positives do to fn usages
