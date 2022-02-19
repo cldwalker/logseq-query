@@ -68,10 +68,10 @@
                          (map identity))
         res (apply d/q query query-args)
         res' (cond-> (into [] post-transduce res)
-                     (:count options)
-                     count
-                     result-transform
-                     ((fn [x] (eval (list result-transform x)))))]
+               (:count options)
+               count
+               result-transform
+               ((fn [x] (eval (list result-transform x)))))]
     (print-results res' options)))
 
 (defn- wrap-query
@@ -79,7 +79,7 @@
   [options f]
   (if (:silence options)
     (try (f)
-      (catch Exception e (prn (.getMessage e))))
+         (catch Exception e (prn (.getMessage e))))
     (f)))
 
 (defn q
@@ -129,9 +129,9 @@
     (if (= :in (nth query 2))
       query
       (apply concat
-        [(take 2 query)
-         [:in '$ '%]
-         (drop 2 query)]))))
+             [(take 2 query)
+              [:in '$ '%]
+              (drop 2 query)]))))
 
 (defn qs
   [{:keys [arguments options]}]

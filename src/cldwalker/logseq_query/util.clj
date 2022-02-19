@@ -61,8 +61,8 @@
   []
   (let [config-file (logseq-query-path "config.edn")]
     (if (fs/exists? config-file)
-     (-> config-file slurp edn/read-string)
-     {})))
+      (-> config-file slurp edn/read-string)
+      {})))
 
 (defn get-graph-paths
   []

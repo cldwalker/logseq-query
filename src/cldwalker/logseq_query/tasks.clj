@@ -17,13 +17,13 @@
 (defn q*
   [{:keys [options arguments summary] :as args}]
   (cond (or (:help options) (empty? arguments))
-    (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
-    (System/getenv "BABASHKA_DATASCRIPT")
-    ((requiring-resolve 'cldwalker.logseq-query.datascript/q)
-     (add-default-options args))
-    :else
-    (clojure (format "-X cldwalker.logseq-query.datascript/q '%s'"
-                     (pr-str (add-default-options args))))))
+        (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
+        (System/getenv "BABASHKA_DATASCRIPT")
+        ((requiring-resolve 'cldwalker.logseq-query.datascript/q)
+         (add-default-options args))
+        :else
+        (clojure (format "-X cldwalker.logseq-query.datascript/q '%s'"
+                         (pr-str (add-default-options args))))))
 
 (def q-cli-options
   [["-h" "--help" "Print help"]
@@ -54,13 +54,13 @@
 (defn qs*
   [{:keys [options arguments summary] :as args}]
   (cond (or (:help options) (empty? arguments))
-    (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
-    (System/getenv "BABASHKA_DATASCRIPT")
-    ((requiring-resolve 'cldwalker.logseq-query.datascript/qs)
-     (add-default-options args))
-    :else
-    (clojure (format "-X cldwalker.logseq-query.datascript/qs '%s'"
-                     (pr-str (add-default-options args))))))
+        (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
+        (System/getenv "BABASHKA_DATASCRIPT")
+        ((requiring-resolve 'cldwalker.logseq-query.datascript/qs)
+         (add-default-options args))
+        :else
+        (clojure (format "-X cldwalker.logseq-query.datascript/qs '%s'"
+                         (pr-str (add-default-options args))))))
 
 (defn qs
   [& args]

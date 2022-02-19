@@ -3,4 +3,11 @@
   datascript-transit/datascript-transit {:mvn/version "0.3.0"}
   io.lambdaforge/datalog-parser {:mvn/version "0.1.9"}
   babashka/fs {:mvn/version "0.1.2"}
-  babashka/process {:mvn/version "0.1.0"}}}
+  babashka/process {:mvn/version "0.1.0"}}
+ :aliases
+ {;; Run code linter
+  :clj-kondo {:replace-deps {clj-kondo/clj-kondo {:mvn/version "RELEASE"}}
+              :main-opts  ["-m" "clj-kondo.main" "--lint" "src"]}
+  ;; Run style linter
+  :cljfmt {:replace-deps {cljfmt/cljfmt {:mvn/version "RELEASE"}}
+           :main-opts ["-m" "cljfmt.main"]}}}
