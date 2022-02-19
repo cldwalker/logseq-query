@@ -1,6 +1,7 @@
 {:paths ["src"]
  :deps {datascript-transit/datascript-transit {:mvn/version "0.3.0"
                                                :exclusions [datascript/datascript]}
+        me.tagaholic/dlint {:mvn/version "0.1.0"}
         io.lambdaforge/datalog-parser {:mvn/version "0.1.10"}}
  :tasks
  {rules

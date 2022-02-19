@@ -13,7 +13,7 @@
  {:query [:find (pull ?b [*])
           :in $ %
           :where
-          [?b :block/properties ?prop]
+          [?b :block/properties ?_prop]
           [(missing? $ ?b :block/name)]]
   :desc "List all block properties"}
 
