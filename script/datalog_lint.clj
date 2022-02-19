@@ -54,12 +54,10 @@
                                    (map :rule)
                                    (mapcat lint-unbound-rule)
                                    (remove :success))
-        ;; TODO: Enable when https://github.com/lambdaforge/datalog-parser/issues/20 is addressed
-        ;; Running into false positives do to fn usages
-        ; invalid-rules (->> (util/get-rules)
-        ;                    (map lint-rule)
-        ;                    (remove :success))
-        lint-results (concat invalid-queries invalid-unbound-queries invalid-unbound-rules #_invalid-rules)]
+        invalid-rules (->> (util/get-rules)
+                           (map lint-rule)
+                           (remove :success))
+        lint-results (concat invalid-queries invalid-unbound-queries invalid-unbound-rules invalid-rules)]
     (if (seq lint-results)
       (do
         (println (count lint-results) "failures for datalog linting:")
