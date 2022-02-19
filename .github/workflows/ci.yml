@@ -5,8 +5,20 @@ on:
   push:
 
 jobs:
-  lint:
-    runs-on: ubuntu-20.04
+  bb-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Babashka
+        uses: turtlequeue/setup-babashka@v1.3.0
+        with:
+          babashka-version: "0.7.5"
+
+      - name: Datalog linter
+        run: script/datalog_lint.clj
+  clj-lint:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 

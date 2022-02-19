@@ -1,7 +1,7 @@
 {:paths ["src"]
  :deps {datascript-transit/datascript-transit {:mvn/version "0.3.0"
                                                :exclusions [datascript/datascript]}
-        io.lambdaforge/datalog-parser {:mvn/version "0.1.9"}}
+        io.lambdaforge/datalog-parser {:mvn/version "0.1.10"}}
  :tasks
  {rules
   cldwalker.logseq-query.tasks/rules
