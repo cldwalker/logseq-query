@@ -76,6 +76,11 @@
   [path]
   (second (re-find #"\+\+([^\+]+).transit$" path)))
 
+(defn get-graph-path
+  [graph]
+  (some #(when (= graph (full-path->graph %)) %)
+        (get-graph-paths)))
+
 (defn print-table
   [rows]
   (pprint/print-table rows)

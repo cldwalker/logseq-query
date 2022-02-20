@@ -12,8 +12,7 @@
 (defn- get-graph-db
   [graph]
   (when (nil? graph) (cli/error (str "--graph option required")))
-  (let [file (or (some #(when (= graph (util/full-path->graph %)) %)
-                       (util/get-graph-paths))
+  (let [file (or (util/get-graph-path graph)
                  ;; graph is a relative path
                  graph)]
     (or (some-> file slurp dt/read-transit-str)

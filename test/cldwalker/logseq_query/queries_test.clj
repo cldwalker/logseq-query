@@ -7,7 +7,7 @@
 (defn- q [& args]
   (with-redefs [ld/print-results (fn [result _] result)]
     (ld/q {:arguments args
-           :options {:graph "test/cldwalker/logseq_query/test-notes.transit"}})))
+           :options {:graph "test/cldwalker/logseq_query/test-notes.json"}})))
 
 (deftest block-property
   (is (= #{{:type "comment" :desc "hi"} {:type "comment" :desc "hola"}}

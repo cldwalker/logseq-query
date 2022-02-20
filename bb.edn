@@ -15,4 +15,13 @@
                                             :git/sha "3625153ee66dfcec2ba600851b5b2cbdab8fae6c"}}
   :requires ([cognitect.test-runner :as tr])
   :doc "Run tests with cognitect test runner"
-  :task (apply tr/-main "-d" "test" *command-line-args*)}}}
+  :task (apply tr/-main "-d" "test" *command-line-args*)}
+
+  copy-test-db
+  {:requires ([cldwalker.logseq-query.util :as util]
+              [babashka.fs :as fs])
+   :doc "Copy test-notes db from ~/.logseq/graphs to test"
+   :task (fs/copy
+          (util/get-graph-path "test-notes")
+          "test/cldwalker/logseq_query/test-notes.json"
+          {:replace-existing true})}}}
