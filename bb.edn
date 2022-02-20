@@ -1,22 +1,8 @@
 {:paths ["src"]
- :deps {datascript-transit/datascript-transit {:mvn/version "0.3.0"
-                                               :exclusions [datascript/datascript]}
-        me.tagaholic/dlint {:mvn/version "0.1.0"}
-        io.lambdaforge/datalog-parser {:git/url "https://github.com/cldwalker/datalog-parser"
-                                       :git/sha "6ffb997c1b020365c8227ff417f9f1f3786a6871"
-                                       :deps/manifest :deps}}
- :tasks
- {rules
-  cldwalker.logseq-query.tasks/rules
-
-  q
-  cldwalker.logseq-query.tasks/q
-
-  qs
-  cldwalker.logseq-query.tasks/qs
-
-  graphs
-  cldwalker.logseq-query.tasks/graphs
-
-  queries
-  cldwalker.logseq-query.tasks/queries}}
+ :deps
+ {datascript-transit/datascript-transit {:mvn/version "0.3.0"
+                                         :exclusions [datascript/datascript]}
+  me.tagaholic/dlint {:mvn/version "0.1.0"}
+  io.lambdaforge/datalog-parser {:git/url "https://github.com/cldwalker/datalog-parser"
+                                 :git/sha "6ffb997c1b020365c8227ff417f9f1f3786a6871"
+                                 :deps/manifest :deps}}}
