@@ -50,12 +50,14 @@
                   filename)))
 
 (defn get-rules
-  []
-  (-> "rules.edn" logseq-query-path slurp edn/read-string))
+  ([] (get-rules "rules.edn"))
+  ([file]
+   (-> file logseq-query-path slurp edn/read-string)))
 
 (defn get-queries
-  []
-  (-> "queries.edn" logseq-query-path slurp edn/read-string))
+  ([] (get-queries "queries.edn"))
+  ([file]
+   (-> file logseq-query-path slurp edn/read-string)))
 
 (defn get-config
   []

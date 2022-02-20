@@ -15,8 +15,11 @@ jobs:
         with:
           babashka-version: "0.7.5"
 
-      - name: Datalog linter
-        run: script/datalog_lint.clj
+      - name: Datalog rules linter
+        run: script/lint_rules.clj rules.edn
+
+      - name: Datalog queries linter
+        run: script/lint_queries.clj queries.edn
   clj-lint:
     runs-on: ubuntu-latest
     steps:
