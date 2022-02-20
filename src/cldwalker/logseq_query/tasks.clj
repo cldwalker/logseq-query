@@ -68,7 +68,10 @@
 
 (defn graphs
   []
-  (prn (map util/full-path->graph (util/get-graph-paths))))
+  (util/print-table
+   (map #(hash-map :name (util/full-path->graph %)
+                   :path %)
+        (util/get-graph-paths))))
 
 (defn queries
   []

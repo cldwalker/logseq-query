@@ -68,7 +68,9 @@
 
 (defn get-graph-paths
   []
-  (map str (fs/glob (fs/expand-home "~/.logseq/graphs") "*.transit")))
+  (let [dir (fs/expand-home "~/.logseq/graphs")]
+    (when (fs/directory? dir)
+      (map str (fs/glob dir "*.transit")))))
 
 (defn full-path->graph
   [path]
