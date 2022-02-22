@@ -9,14 +9,18 @@
             [cldwalker.logseq-query.cli :as cli]
             [cldwalker.logseq-query.util :as util]))
 
+(defn- get-graph-db*
+  [graph]
+  (let [file (or (util/get-graph-path graph)
+                 ;; graph is a path
+                 graph)]
+    (some-> file slurp dt/read-transit-str)))
+
 (defn- get-graph-db
   [graph]
   (when (nil? graph) (cli/error (str "--graph option required")))
-  (let [file (or (util/get-graph-path graph)
-                 ;; graph is a relative path
-                 graph)]
-    (or (some-> file slurp dt/read-transit-str)
-        (cli/error (str "No graph found for " (pr-str graph))))))
+  (or (get-graph-db* graph)
+      (cli/error (str "No graph found for " (pr-str graph)))))
 
 ;; From earlier version of datascript
 (defn- parse-query [query]
