@@ -1,4 +1,4 @@
-{:paths ["src"]
+{:paths ["src" "resources"]
  :deps {datascript-transit/datascript-transit {:mvn/version "0.3.0"
                                                :exclusions [datascript/datascript]}
         io.lambdaforge/datalog-parser {:mvn/version "0.1.10"}}

@@ -44,8 +44,7 @@
 
 (defn logseq-query-path
   [filename]
-  ;; TODO: Fix
-  (str "./" filename)
+  (io/resource filename)
   #_(str (fs/path (fs/parent (fs/parent (System/getenv "_")))
                   filename)))
 
@@ -61,7 +60,7 @@
 
 (defn get-config
   []
-  (let [config-file (logseq-query-path "config.edn")]
+  (let [config-file "./config.edn"]
     (if (fs/exists? config-file)
       (-> config-file slurp edn/read-string)
       {})))
