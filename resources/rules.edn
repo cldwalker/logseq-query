@@ -12,14 +12,6 @@
    [(keyword ?ks) ?k]
    [(get ?prop ?k)]]}
 
- {:desc "Join to page by name, property or property value"
-  :rule
-  [(page-name-property ?b ?block-name ?property-name ?property-value)
-   [?b :block/original-name ?block-name]
-   [?b :block/properties ?p]
-   [(get ?p ?property-name) ?property-values]
-   [(contains? ?property-values ?property-value)]]}
-
  {:desc "Todos that contain one of markers"
   :rule
   [(todo ?b ?markers)

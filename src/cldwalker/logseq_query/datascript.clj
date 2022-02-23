@@ -91,7 +91,7 @@
   [{:keys [arguments options]}]
   (let [[query-id & args] arguments
         db (get-graph-db (:graph options))
-        queries (util/get-queries)
+        queries (util/get-all-queries)
         {:keys [args-transform] :as query-m} (get queries (keyword query-id))
         _ (when-not query-m
             (println "Error: No query found for" query-id)
@@ -110,7 +110,7 @@
             (println "Error: Wrong number of arguments")
             (println (format "Usage: lq q %s" (str/join " " expected-args)))
             (System/exit 1))
-        rules (map :rule (util/get-rules))
+        rules (map :rule (util/get-all-rules))
         q-args (conj actual-args rules)]
     (parser/parse query)
     (wrap-query options
@@ -142,7 +142,7 @@
   [{:keys [arguments options]}]
   (let [query-string (str/join " " arguments)
         db (get-graph-db (:graph options))
-        rules (map :rule (util/get-rules))
+        rules (map :rule (util/get-all-rules))
         query (edn/read-string query-string)
         query' (add-find-and-in-defaults
                 (if (keyword? (first query)) query (conj [:where] query)))

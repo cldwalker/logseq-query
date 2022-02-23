@@ -3,9 +3,7 @@
           :in $ ?prop ?prop-value %
           :where
           [(keyword ?prop) ?prop-k]
-          (block-property ?b ?prop-k ?prop-value)
-          #_(block-property ?b :name ?name)
-          #_(block-property ?b2 :author ?name)]
+          (block-property ?b ?prop-k ?prop-value)]
   :desc "List all blocks that have property equal to property value"
   :default-args ["type" "person"]}
 
@@ -33,33 +31,6 @@
           (all-block-property ?b ?_prop ?ks)]
   :desc "List blocks that have given property"}
 
- :property-counts
- {:query :all-block-property
-  :result-transform (fn [result]
-                      (->> result
-                           (reduce (fn [acc e]
-                                     (update-in acc [(get-in e [:block/properties :type])] (fnil inc 0))) {})
-                           (sort-by val >)))
-  :default-args ["type"]
-  :desc "Counts for given property by type"}
-
- :page-property
- {:query [:find (pull ?things [*])
-          :in $ ?region %
-          :where
-          (page-name-property ?_b ?country :region ?region)
-          (page-name-property ?_b2 ?author :country-of-origin ?country)
-          (page-name-property ?things ?_name :authored-by ?author)]
-  :desc "Practice page property query"
-  :default-args ["Middle East"]}
-
- :page-names
- {:query [:find ?n
-          :in $ %
-          :where
-          [?_b :block/name ?n]]
-  :desc "List all page names"}
-
  :todos
  {:query [:find (pull ?b
                       [* :block/parent {:block/page [:db/id :block/name]}])
@@ -76,12 +47,6 @@
                            (sort-by val >)))
   :desc "todos count by page"}
 
- :todos-by-marker
- {:query :todos
-  :result-transform (fn [result]
-                      (update-vals (group-by :block/marker result) count))
-  :desc "todos count by marker"}
-
  :todo-marker
  {:query [:find (pull ?b [*])
           :in $ ?markers %
@@ -91,14 +56,6 @@
   :args-transform (fn [args]
                     (set (map (comp clojure.string/upper-case name) args)))
   :desc "Todos that contain one of the markers"}
-
- :todos-with-urls
- {:query [:find (pull ?b [*])
-          :in $ %
-          :where
-          (todo ?b #{"TODO" "DOING"})
-          (content-search ?b "https")]
-  :desc "Todos with urls"}
 
  :content-search
  {:query [:find (pull ?b [*])
@@ -114,21 +71,4 @@
           [(keyword ?prop) ?prop-k]
           (block-property ?b ?prop-k ?prop-value)
           [(clojure.string/includes? ?prop-value ?query)]]
-  :desc "Full text search on property"}
-
- :tag-todos
- {:query [:find (pull ?b [* {:block/refs [:db/id :block/name]}])
-          :in $ ?tag %
-          :where
-          (todo ?b #{"TODO" "DOING"})
-          (tag ?b ?tag)]
-  :default-args ["eng"]
-  :desc "List all todos for tag"}
-
- :tag-todos-tag-cloud
- {:query :tag-todos
-  :result-transform (fn [result]
-                      (->> result
-                           (mapcat (fn [m] (map :block/name (:block/refs m))))
-                           frequencies
-                           (sort-by val >)))}}
+  :desc "Full text search on property"}}

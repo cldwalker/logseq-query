@@ -1,4 +1,4 @@
 .cpcache
 bin/bb-datascript
-config.edn
 /test-notes/logseq/bak
+/test-notes/logseq/config.edn

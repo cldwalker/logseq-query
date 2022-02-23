@@ -42,25 +42,31 @@
         cmd (into cmd args)]
     @(p/process prev cmd (merge default-opts opts))))
 
-(defn logseq-query-path
-  [filename]
-  (io/resource filename)
-  #_(str (fs/path (fs/parent (fs/parent (System/getenv "_")))
-                  filename)))
-
 (defn get-rules
-  ([] (get-rules "rules.edn"))
-  ([file]
-   (-> file logseq-query-path slurp edn/read-string)))
+  [file]
+  (if (fs/exists? file)
+    (-> file slurp edn/read-string)
+    []))
+
+(defn get-all-rules
+  []
+  (into (-> "rules.edn" io/resource slurp edn/read-string)
+        (get-rules (str (fs/expand-home "~/.lq/rules.edn")))))
 
 (defn get-queries
-  ([] (get-queries "queries.edn"))
-  ([file]
-   (-> file logseq-query-path slurp edn/read-string)))
+  [file]
+  (if (fs/exists? file)
+    (-> file slurp edn/read-string)
+    {}))
+
+(defn get-all-queries
+  []
+  (merge (-> "queries.edn" io/resource slurp edn/read-string)
+         (get-queries (str (fs/expand-home "~/.lq/queries.edn")))))
 
 (defn get-config
   []
-  (let [config-file "./config.edn"]
+  (let [config-file (str (fs/expand-home "~/.lq/config.edn"))]
     (if (fs/exists? config-file)
       (-> config-file slurp edn/read-string)
       {})))

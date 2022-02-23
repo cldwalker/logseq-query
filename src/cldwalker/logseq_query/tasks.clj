@@ -5,7 +5,7 @@
 
 (defn rules
   []
-  (->> (util/get-rules)
+  (->> (util/get-all-rules)
        (map #(hash-map :name (ffirst (:rule %))
                        :desc (:desc %)))
        util/print-table))
@@ -78,4 +78,4 @@
   (util/print-table
    (map (fn [[k v]]
           {:name k :desc (:desc v)})
-        (util/get-queries))))
+        (util/get-all-queries))))
