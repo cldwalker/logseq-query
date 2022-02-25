@@ -2,7 +2,7 @@
  :deps
  {datascript/datascript {:mvn/version "1.3.10"}
   datascript-transit/datascript-transit {:mvn/version "0.3.0"}
-  io.lambdaforge/datalog-parser {:mvn/version "0.1.10"}
+  io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}
   babashka/fs {:mvn/version "0.1.2"}
   babashka/process {:mvn/version "0.1.0"}}
  :aliases

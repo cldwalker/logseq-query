@@ -3,9 +3,7 @@
  {datascript-transit/datascript-transit {:mvn/version "0.3.0"
                                          :exclusions [datascript/datascript]}
   me.tagaholic/dlint {:mvn/version "0.1.0"}
-  io.lambdaforge/datalog-parser {:git/url "https://github.com/cldwalker/datalog-parser"
-                                 :git/sha "6ffb997c1b020365c8227ff417f9f1f3786a6871"
-                                 :deps/manifest :deps}}
+  io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}}
  :tasks
  {test
  {:extra-paths ["test"]
