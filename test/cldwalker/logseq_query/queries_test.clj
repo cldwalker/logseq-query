@@ -28,10 +28,10 @@
     (ld/q {:arguments args
            :options {:graph "test/cldwalker/logseq_query/test-notes.json"}})))
 
-(deftest block-property
+(deftest property
   (is (= #{{:type "comment" :desc "hi"} {:type "comment" :desc "hola"}}
-         (->> (q :args ["block-property" "type" "comment"]
-                 :pages #{"test/block-property"})
+         (->> (q :args ["property" "type" "comment"]
+                 :pages #{"test/property"})
               (map :block/properties)
               set))))
 

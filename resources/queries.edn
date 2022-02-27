@@ -1,9 +1,9 @@
-{:block-property
+{:property
  {:query [:find (pull ?b [*])
           :in $ ?prop ?prop-value %
           :where
           [(keyword ?prop) ?prop-k]
-          (block-property ?b ?prop-k ?prop-value)]
+          (property ?b ?prop-k ?prop-value)]
   :desc "List all blocks that have property equal to property value"
   :default-args ["type" "person"]}
 
@@ -24,28 +24,12 @@
                            (sort-by val >)))
   :desc "Counts for all block properties"}
 
- :all-block-property
+ :has-property
  {:query [:find (pull ?b [*])
           :in $ ?ks %
           :where
-          (all-block-property ?b ?_prop ?ks)]
+          (has-property ?b ?_prop ?ks)]
   :desc "List blocks that have given property"}
-
- :todos
- {:query [:find (pull ?b
-                      [* :block/parent {:block/page [:db/id :block/name]}])
-          :in $ %
-          :where
-          [?b :block/marker ?_marker]]
-  :desc "List all todos"}
-
- :todos-by-page
- {:query :todos
-  :result-transform (fn [result]
-                      (->> (update-vals
-                            (group-by (fn [x] (get-in x [:block/page :block/name])) result) count)
-                           (sort-by val >)))
-  :desc "todos count by page"}
 
  :todo-marker
  {:query [:find (pull ?b [*])

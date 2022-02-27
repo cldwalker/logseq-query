@@ -1,12 +1,12 @@
 [{:desc "Join to block by property or property value"
   :rule
-  [(block-property ?b ?property-name ?property-value)
+  [(property ?b ?property-name ?property-value)
    [?b :block/properties ?p]
    [(get ?p ?property-name) ?property-value]]}
 
- {:desc "All blocks with given property"
+ {:desc "Blocks that have given property"
   :rule
-  [(all-block-property ?b ?prop ?ks)
+  [(has-property ?b ?prop ?ks)
    [?b :block/properties ?prop]
    [(missing? $ ?b :block/name)]
    [(keyword ?ks) ?k]

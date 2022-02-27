@@ -1,4 +1,4 @@
-title:: test/block-property
+title:: test/property
 
 - type:: comment
   desc:: hi
