@@ -35,7 +35,7 @@
               (map :block/properties)
               set))))
 
-(deftest block-property-counts
+(deftest property-counts
   (is (= [[:type 2] [:desc 1]]
-         (q :args ["block-property-counts"]
-            :pages #{"test/block-property-counts"}))))
+         (q :args ["property-counts"]
+            :pages #{"test/property-counts"}))))
