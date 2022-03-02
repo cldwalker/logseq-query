@@ -2,6 +2,7 @@
   (:require [datascript.core :as d]
             [datascript.transit :as dt]
             [datalog.parser :as parser]
+            [babashka.fs :as fs]
             [clojure.set :as set]
             [clojure.string :as str]
             [clojure.edn :as edn]
@@ -11,10 +12,11 @@
 
 (defn- get-graph-db*
   [graph]
-  (let [file (or (util/get-graph-path graph)
-                 ;; graph is a path
-                 graph)]
-    (some-> file slurp dt/read-transit-str)))
+  (when-let [file (or (util/get-graph-path graph)
+                      ;; graph is a path
+                      graph)]
+    (when (fs/exists? file)
+      (-> file slurp dt/read-transit-str))))
 
 (defn- get-graph-db
   [graph]
@@ -95,8 +97,7 @@
   (let [queries (util/get-all-queries)
         query-m (get queries (keyword query-name))
         _ (when-not query-m
-            (println "Error: No query found for" query-name)
-            (System/exit 1))
+            (cli/error "Error: No query found for" query-name))
         query (if (:parent query-m)
                 (or (:query (get queries (:parent query-m)))
                     (cli/error (str "No query found for " (:parent query-m))))
@@ -106,9 +107,8 @@
 (defn- validate-args [actual in]
   (let [expected-args (set/difference (set in) #{'% '$})]
     (when-not (= (count actual) (count expected-args))
-      (println "Error: Wrong number of arguments")
-      (println (format "Usage: lq q %s" (str/join " " expected-args)))
-      (System/exit 1))))
+      (cli/error "Wrong number of arguments"
+                 (format "\nUsage: lq q %s" (str/join " " expected-args))))))
 
 (defn q
   "Run a query given it's name and args"
