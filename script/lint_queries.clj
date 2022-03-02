@@ -31,7 +31,7 @@
   (let [queries (->> args
                      (map util/get-queries)
                      (apply merge)
-                     (remove (fn [[_k v]] (keyword? (:query v)))))
+                     (remove (fn [[_k v]] (nil? (:query v)))))
         invalid-queries (->> queries
                              (map lint-query)
                              (remove :success))

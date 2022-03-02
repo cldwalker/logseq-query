@@ -57,9 +57,13 @@
     (run! println (map #(->> % :block/content (str "- ")) rows))
 
     :else
-    (if (:puget options)
+    (cond
+      (:puget options)
       (-> (util/shell {:out :string} "echo" (pr-str rows))
           (util/shell "puget"))
+      (:raw options)
+      rows
+      :else
       (prn rows))))
 
 (defn- q-and-print-results
@@ -87,29 +91,37 @@
          (catch Exception e (prn (.getMessage e))))
     (f)))
 
-(defn q
-  [{:keys [arguments options]}]
-  (let [[query-id & args] arguments
-        db (get-graph-db (:graph options))
-        queries (util/get-all-queries)
-        {:keys [args-transform] :as query-m} (get queries (keyword query-id))
+(defn- get-query [query-name]
+  (let [queries (util/get-all-queries)
+        query-m (get queries (keyword query-name))
         _ (when-not query-m
-            (println "Error: No query found for" query-id)
+            (println "Error: No query found for" query-name)
             (System/exit 1))
-        query (if (keyword? (:query query-m))
-                (or (:query (get queries (:query query-m)))
-                    (cli/error (str "No query found for " (:query query-m))))
-                (:query query-m))
+        query (if (:parent query-m)
+                (or (:query (get queries (:parent query-m)))
+                    (cli/error (str "No query found for " (:parent query-m))))
+                (:query query-m))]
+    (assoc query-m :query query)))
+
+(defn- validate-args [actual in]
+  (let [expected-args (set/difference (set in) #{'% '$})]
+    (when-not (= (count actual) (count expected-args))
+      (println "Error: Wrong number of arguments")
+      (println (format "Usage: lq q %s" (str/join " " expected-args)))
+      (System/exit 1))))
+
+(defn q
+  "Run a query given it's name and args"
+  [{:keys [arguments options]}]
+  (let [[query-name & args] arguments
+        db (get-graph-db (:graph options))
+        {:keys [args-transform query] :as query-m} (get-query query-name)
         args (if (and (seq args) args-transform)
                [(eval (list args-transform (vec args)))]
                args)
         {:keys [find in]} (parse-query query)
-        expected-args (set/difference (set in) #{'% '$})
         actual-args (into [] (or (seq args) (:default-args query-m)))
-        _ (when-not (= (count actual-args) (count expected-args))
-            (println "Error: Wrong number of arguments")
-            (println (format "Usage: lq q %s" (str/join " " expected-args)))
-            (System/exit 1))
+        _ (validate-args actual-args in)
         rules (map :rule (util/get-all-rules))
         q-args (conj actual-args rules)]
     (parser/parse query)
@@ -139,6 +151,7 @@
               (drop 2 query)]))))
 
 (defn qs
+  "Run a shorthand query"
   [{:keys [arguments options]}]
   (let [query-string (str/join " " arguments)
         db (get-graph-db (:graph options))

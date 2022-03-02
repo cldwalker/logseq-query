@@ -16,7 +16,7 @@
   :desc "List all blocks that have properties"}
 
  :property-counts
- {:query :properties
+ {:parent :properties
   :result-transform (fn [result]
                       (->> result
                            (map (fn [m] (zipmap (keys (:block/properties m)) (repeat 1))))
@@ -31,11 +31,11 @@
           (has-property ?b ?_prop ?ks)]
   :desc "List blocks that have given property"}
 
- :todo-marker
+ :todo-for-marker
  {:query [:find (pull ?b [*])
           :in $ ?markers %
           :where
-          (todo ?b ?markers)]
+          (todo-for-marker ?b ?markers)]
   :default-args [#{"TODO" "DOING"}]
   :args-transform (fn [args]
                     (set (map (comp clojure.string/upper-case name) args)))
@@ -53,6 +53,6 @@
           :in $ ?prop ?query %
           :where
           [(keyword ?prop) ?prop-k]
-          (block-property ?b ?prop-k ?prop-value)
+          (property ?b ?prop-k ?prop-value)
           [(clojure.string/includes? ?prop-value ?query)]]
   :desc "Full text search on property"}}

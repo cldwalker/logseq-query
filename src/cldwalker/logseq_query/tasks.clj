@@ -5,10 +5,11 @@
 
 (defn rules
   []
-  (->> (util/get-all-rules)
-       (map #(hash-map :name (ffirst (:rule %))
-                       :desc (:desc %)))
-       util/print-table))
+  (util/print-table
+   (->> (util/get-all-rules)
+        (map #(hash-map :name (ffirst (:rule %))
+                        :desc (:desc %))))
+   :fields [:name :desc]))
 
 (defn- add-default-options
   [args]
@@ -71,11 +72,14 @@
   (util/print-table
    (map #(hash-map :name (util/full-path->graph %)
                    :path %)
-        (util/get-graph-paths))))
+        (util/get-graph-paths))
+   :fields [:name :path]))
 
 (defn queries
   []
   (util/print-table
-   (map (fn [[k v]]
-          {:name k :desc (:desc v)})
-        (util/get-all-queries))))
+   (sort-by :name
+            (map (fn [[k v]]
+                   (merge {:name k} v))
+                 (util/get-all-queries)))
+   :fields [:name :parent :desc]))

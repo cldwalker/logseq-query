@@ -87,6 +87,6 @@
         (get-graph-paths)))
 
 (defn print-table
-  [rows]
-  (pprint/print-table rows)
+  [rows & {:keys [fields]}]
+  (if fields (pprint/print-table fields rows) (pprint/print-table rows))
   (println "Total:" (count rows)))

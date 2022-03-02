@@ -14,7 +14,7 @@
 
  {:desc "Todos that contain one of markers"
   :rule
-  [(todo ?b ?markers)
+  [(todo-for-marker ?b ?markers)
    [?b :block/marker ?marker]
    [(contains? ?markers ?marker)]]}
 
