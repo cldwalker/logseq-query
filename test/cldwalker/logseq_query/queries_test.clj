@@ -36,9 +36,9 @@
               (map :block/properties)
               set))))
 
-(deftest properties
+(deftest property-all
   (is (= 2
-         (count (q :args ["properties"]
+         (count (q :args ["property-all"]
                    :pages #{"test/property-counts"})))))
 
 (deftest property-counts
@@ -53,20 +53,20 @@
                (q :args ["has-property" "type"]
                   :pages #{"test/has-property"}))))))
 
-(deftest todo-for-marker
+(deftest task
   (testing "default args"
     (is (= #{"TODO b1" "DOING b2"}
            (set
             (map (comp first str/split-lines :block/content)
-                 (q :args ["todo-for-marker"]
-                    :pages #{"test/todo-for-marker"}))))))
+                 (q :args ["task"]
+                    :pages #{"test/task"}))))))
 
   (testing "with args"
     (is (= #{"TODO b1" "DONE b3"}
            (set
             (map (comp first str/split-lines :block/content)
-                 (q :args ["todo-for-marker" "todo" "done"]
-                    :pages #{"test/todo-for-marker"})))))))
+                 (q :args ["task" "todo" "done"]
+                    :pages #{"test/task"})))))))
 
 (deftest content-search
   (is (= #{"blarg\nblargity" "oopsie\nflower:: blarg"}

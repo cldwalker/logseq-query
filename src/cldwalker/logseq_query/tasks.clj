@@ -82,4 +82,4 @@
             (map (fn [[k v]]
                    (merge {:name k} v))
                  (util/get-all-queries)))
-   :fields [:name :parent :desc]))
+   :fields [:name :parent :author :desc]))

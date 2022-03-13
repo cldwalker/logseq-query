@@ -7,7 +7,7 @@
   :desc "List all blocks that have property equal to property value"
   :default-args ["type" "person"]}
 
- :properties
+ :property-all
  {:query [:find (pull ?b [*])
           :in $ %
           :where
@@ -16,7 +16,7 @@
   :desc "List all blocks that have properties"}
 
  :property-counts
- {:parent :properties
+ {:parent :property-all
   :result-transform (fn [result]
                       (->> result
                            (map (fn [m] (zipmap (keys (:block/properties m)) (repeat 1))))
@@ -31,11 +31,11 @@
           (has-property ?b ?_prop ?ks)]
   :desc "List blocks that have given property"}
 
- :todo-for-marker
+ :task
  {:query [:find (pull ?b [*])
           :in $ ?markers %
           :where
-          (todo-for-marker ?b ?markers)]
+          (task ?b ?markers)]
   :default-args [#{"TODO" "DOING"}]
   :args-transform (fn [args]
                     (set (map (comp clojure.string/upper-case name) args)))

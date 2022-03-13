@@ -1,3 +1,5 @@
+title:: test/task
+
 - TODO b1
 - DOING b2
   :LOGBOOK:

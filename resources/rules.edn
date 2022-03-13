@@ -12,9 +12,9 @@
    [(keyword ?ks) ?k]
    [(get ?prop ?k)]]}
 
- {:desc "Todos that contain one of markers"
+ {:desc "Tasks that contain one of markers"
   :rule
-  [(todo-for-marker ?b ?markers)
+  [(task ?b ?markers)
    [?b :block/marker ?marker]
    [(contains? ?markers ?marker)]]}
 

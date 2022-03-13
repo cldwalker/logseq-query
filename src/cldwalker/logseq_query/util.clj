@@ -61,8 +61,9 @@
 
 (defn get-all-queries
   []
-  (merge (-> "queries.edn" io/resource slurp edn/read-string)
-         (get-queries (str (fs/expand-home "~/.lq/queries.edn")))))
+  (merge (-> "queries.edn" io/resource slurp edn/read-string (update-vals #(assoc % :author :lq)))
+         (update-vals (get-queries (str (fs/expand-home "~/.lq/queries.edn")))
+                      #(assoc % :author :user))))
 
 (defn get-config
   []
