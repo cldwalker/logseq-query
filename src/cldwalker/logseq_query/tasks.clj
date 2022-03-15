@@ -7,9 +7,10 @@
   []
   (util/print-table
    (->> (util/get-all-rules)
-        (map #(hash-map :name (ffirst (:rule %))
-                        :desc (:desc %))))
-   :fields [:name :desc]))
+        (map #(hash-map :name (:name %)
+                        :desc (:desc %)
+                        :author (:author %))))
+   :fields [:name :author :desc]))
 
 (defn- add-default-options
   [args]

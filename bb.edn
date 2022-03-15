@@ -3,7 +3,9 @@
  {datascript-transit/datascript-transit {:mvn/version "0.3.0"
                                          :exclusions [datascript/datascript]}
   me.tagaholic/dlint {:mvn/version "0.1.0"}
-  io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}}
+  io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}
+  logseq/logseq {:git/url "https://github.com/logseq/logseq"
+                 :git/sha "b1aa906e8974a421345760f938484c195797a1b2"}}
  :tasks
  {test
  {:extra-paths ["test"]

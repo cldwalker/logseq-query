@@ -28,7 +28,8 @@
  {:query [:find (pull ?b [*])
           :in $ ?ks %
           :where
-          (has-property ?b ?_prop ?ks)]
+          [(keyword ?ks) ?k]
+          (has-property ?b ?k)]
   :desc "List blocks that have given property"}
 
  :task
@@ -45,7 +46,7 @@
  {:query [:find (pull ?b [*])
           :in $ ?query %
           :where
-          (content-search ?b ?query)]
+          (block-content ?b ?query)]
   :desc "Full text search on :block/content"}
 
  :property-search

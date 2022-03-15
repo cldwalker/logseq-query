@@ -1,31 +1,14 @@
-[{:desc "Join to block by property or property value"
+[{:name :property
+  :desc "Join to block by property or property value"
   :rule
   [(property ?b ?property-name ?property-value)
    [?b :block/properties ?p]
    [(get ?p ?property-name) ?property-value]]}
 
- {:desc "Blocks that have given property"
+ {:name :page-ref
+  :desc "Blocks tagged with page/tag ref"
   :rule
-  [(has-property ?b ?prop ?ks)
-   [?b :block/properties ?prop]
-   [(missing? $ ?b :block/name)]
-   [(keyword ?ks) ?k]
-   [(get ?prop ?k)]]}
-
- {:desc "Tasks that contain one of markers"
-  :rule
-  [(task ?b ?markers)
-   [?b :block/marker ?marker]
-   [(contains? ?markers ?marker)]]}
-
- {:desc "Blocks tagged with page/tag ref"
-  :rule
-  [(tag ?b ?tag)
+  [(page-ref ?b ?tag)
    [?b :block/path-refs ?b2]
    [?b2 :block/name ?tag]]}
-
- {:desc "Search :block/content"
-  :rule [(content-search ?b ?query)
-         [?b :block/content ?content]
-         [(clojure.string/includes? ?content ?query)]]}
  ]

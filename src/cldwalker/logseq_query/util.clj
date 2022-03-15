@@ -3,7 +3,8 @@
             [clojure.pprint :as pprint]
             [clojure.java.io :as io]
             [babashka.process :as p]
-            [babashka.fs :as fs]))
+            [babashka.fs :as fs]
+            [frontend.db.rules :as rules]))
 
 (def default-opts
   {:in :inherit
@@ -48,10 +49,25 @@
     (-> file slurp edn/read-string)
     []))
 
+(defn- get-logseq-rules
+  []
+  (let [descs {:block-content "Blocks that have given string in :block/content"
+               :has-property "Blocks that have given property"
+               :has-page-property "Pages that have given property"
+               :page-property "Pages that have property equal to value"
+               :page-ref "Blocks associated to given page/tag"
+               :task "Tasks that contain one of markers"}]
+    (mapv (fn [[k v]] {:name k :rule v :author :logseq :desc (descs k)})
+          ;; TODO: Debug issues with upstream property
+          ;; TODO: May need to page page-ref upstream
+          (dissoc rules/query-dsl-rules :property :page-ref))))
+
 (defn get-all-rules
   []
-  (into (-> "rules.edn" io/resource slurp edn/read-string)
-        (get-rules (str (fs/expand-home "~/.lq/rules.edn")))))
+  (into (get-logseq-rules)
+        (into (-> "rules.edn" io/resource slurp edn/read-string (update-vals #(assoc % :author :lq)))
+              (update-vals (get-rules (str (fs/expand-home "~/.lq/rules.edn")))
+                           #(assoc % :author :user)))))
 
 (defn get-queries
   [file]
