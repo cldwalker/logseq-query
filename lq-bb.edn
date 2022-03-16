@@ -1,9 +1,12 @@
 {:paths ["src" "resources"]
- :deps {datascript-transit/datascript-transit {:mvn/version "0.3.0"
-                                               :exclusions [datascript/datascript]}
-        io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}
-        logseq/logseq {:git/url "https://github.com/logseq/logseq"
-                       :git/sha "b1aa906e8974a421345760f938484c195797a1b2"}}
+ :deps
+ ;; TODO: Use this as it should work, but doesn't
+ #_{local/deps {:local/root "."}}
+ {datascript-transit/datascript-transit {:mvn/version "0.3.0"
+                                         :exclusions [datascript/datascript]}
+  io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}
+  logseq/logseq {:git/url "https://github.com/logseq/logseq"
+                 :git/sha "b1aa906e8974a421345760f938484c195797a1b2"}}
  :tasks
  {rules
   cldwalker.logseq-query.tasks/rules

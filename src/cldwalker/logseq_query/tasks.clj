@@ -24,7 +24,7 @@
         ((requiring-resolve 'cldwalker.logseq-query.datascript/q)
          (add-default-options args))
         :else
-        (clojure (format "-X cldwalker.logseq-query.datascript/q '%s'"
+        (clojure (format "-X:bb cldwalker.logseq-query.datascript/q '%s'"
                          (pr-str (add-default-options args))))))
 
 (def q-cli-options
@@ -61,7 +61,7 @@
         ((requiring-resolve 'cldwalker.logseq-query.datascript/qs)
          (add-default-options args))
         :else
-        (clojure (format "-X cldwalker.logseq-query.datascript/qs '%s'"
+        (clojure (format "-X:bb cldwalker.logseq-query.datascript/qs '%s'"
                          (pr-str (add-default-options args))))))
 
 (defn qs

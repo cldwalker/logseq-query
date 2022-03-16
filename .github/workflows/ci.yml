@@ -56,4 +56,4 @@ jobs:
           tools-deps: "1.10.3.1058"
 
       - name: Run tests
-        run: clojure -X:test
+        run: clojure -X:bb:test

@@ -1,12 +1,21 @@
 {:paths ["src" "resources"]
  :deps
- {datascript/datascript {:mvn/version "1.3.10"}
-  datascript-transit/datascript-transit {:mvn/version "0.3.0"}
-  io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}
-  babashka/fs {:mvn/version "0.1.2"}
-  babashka/process {:mvn/version "0.1.0"}}
+ ;; Base deps are shared with bb.edn's
+ {datascript-transit/datascript-transit {:mvn/version "0.3.0"
+                                         :exclusions [datascript/datascript]}
+  logseq/logseq {:git/url "https://github.com/logseq/logseq"
+                 :git/sha "b1aa906e8974a421345760f938484c195797a1b2"}
+  io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}}
  :aliases
- {;; Run code linter
+  ;; Add deps that bb-datascript already provides
+ {:bb
+  {:extra-deps
+   {org.clojure/clojure {:mvn/version "1.11.0-rc1"}
+    datascript/datascript {:mvn/version "1.3.10"}
+    babashka/process {:mvn/version "0.1.0"}
+    babashka/fs {:mvn/version "0.1.2"}}}
+
+  ;; Run code linter
   :clj-kondo {:replace-deps {clj-kondo/clj-kondo {:mvn/version "RELEASE"}}
               :main-opts  ["-m" "clj-kondo.main" "--lint" "src" "script"]}
   ;; Run style linter

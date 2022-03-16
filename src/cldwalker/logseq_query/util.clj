@@ -54,7 +54,7 @@
   (let [descs {:block-content "Blocks that have given string in :block/content"
                :has-property "Blocks that have given property"
                :has-page-property "Pages that have given property"
-               :page-property "Pages that have property equal to value"
+               :page-property "Pages that have property equal to value or that contain the value"
                :page-ref "Blocks associated to given page/tag"
                :task "Tasks that contain one of markers"}]
     (mapv (fn [[k v]] {:name k :rule v :author :logseq :desc (descs k)})

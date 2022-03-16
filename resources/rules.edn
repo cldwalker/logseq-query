@@ -1,5 +1,5 @@
 [{:name :property
-  :desc "Join to block by property or property value"
+  :desc "Blocks that have property equal to value or that contain the value"
   :rule
   [(property ?b ?property-name ?property-value)
    [?b :block/properties ?p]
