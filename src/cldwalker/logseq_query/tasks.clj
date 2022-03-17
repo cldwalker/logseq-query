@@ -7,10 +7,10 @@
   []
   (util/print-table
    (->> (util/get-all-rules)
-        (map #(hash-map :name (:name %)
+        (map #(hash-map :name (name (:name %))
                         :desc (:desc %)
-                        :author (:author %))))
-   :fields [:name :author :desc]))
+                        :namespace (namespace (:name %)))))
+   :fields [:name :namespace :desc]))
 
 (defn- add-default-options
   [args]
@@ -81,6 +81,7 @@
   (util/print-table
    (sort-by :name
             (map (fn [[k v]]
-                   (merge {:name k} v))
+                   (merge {:name (name k) :namespace (namespace k)}
+                          v))
                  (util/get-all-queries)))
-   :fields [:name :parent :author :desc]))
+   :fields [:name :namespace :parent :desc]))

@@ -57,7 +57,7 @@
                :page-property "Pages that have property equal to value or that contain the value"
                :page-ref "Blocks associated to given page/tag"
                :task "Tasks that contain one of markers"}]
-    (mapv (fn [[k v]] {:name k :rule v :author :logseq :desc (descs k)})
+    (mapv (fn [[k v]] {:name (keyword "logseq" (name k)) :rule v :desc (descs k)})
           ;; TODO: Debug issues with upstream property
           ;; TODO: May need to page page-ref upstream
           (dissoc rules/query-dsl-rules :property :page-ref))))
@@ -65,9 +65,8 @@
 (defn get-all-rules
   []
   (into (get-logseq-rules)
-        (into (-> "rules.edn" io/resource slurp edn/read-string (update-vals #(assoc % :author :lq)))
-              (update-vals (get-rules (str (fs/expand-home "~/.lq/rules.edn")))
-                           #(assoc % :author :user)))))
+        (into (-> "rules.edn" io/resource slurp edn/read-string)
+              (get-rules (str (fs/expand-home "~/.lq/rules.edn"))))))
 
 (defn get-queries
   [file]
@@ -77,9 +76,8 @@
 
 (defn get-all-queries
   []
-  (merge (-> "queries.edn" io/resource slurp edn/read-string (update-vals #(assoc % :author :lq)))
-         (update-vals (get-queries (str (fs/expand-home "~/.lq/queries.edn")))
-                      #(assoc % :author :user))))
+  (merge (-> "queries.edn" io/resource slurp edn/read-string)
+         (get-queries (str (fs/expand-home "~/.lq/queries.edn")))))
 
 (defn get-config
   []

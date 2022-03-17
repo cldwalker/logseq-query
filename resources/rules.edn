@@ -1,11 +1,11 @@
-[{:name :property
+[{:name :lq/property
   :desc "Blocks that have property equal to value or that contain the value"
   :rule
   [(property ?b ?property-name ?property-value)
    [?b :block/properties ?p]
    [(get ?p ?property-name) ?property-value]]}
 
- {:name :page-ref
+ {:name :lq/page-ref
   :desc "Blocks tagged with page/tag ref"
   :rule
   [(page-ref ?b ?tag)

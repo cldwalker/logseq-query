@@ -39,7 +39,13 @@
 (deftest property-all
   (is (= 2
          (count (q :args ["property-all"]
-                   :pages #{"test/property-counts"})))))
+                   :pages #{"test/property-counts"})))
+      "property-all works")
+
+  (is (= 2
+         (count (q :args ["lq/property-all"]
+                   :pages #{"test/property-counts"})))
+      "lq/property-all works"))
 
 (deftest property-counts
   (is (= [[:type 2] [:desc 1]]

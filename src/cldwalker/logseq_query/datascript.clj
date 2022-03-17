@@ -95,7 +95,10 @@
 
 (defn- get-query [query-name]
   (let [queries (util/get-all-queries)
-        query-m (get queries (keyword query-name))
+        all-queries (merge queries
+                           ;; shortened names
+                           (update-keys queries #(keyword (name %))))
+        query-m (get all-queries (keyword query-name))
         _ (when-not query-m
             (cli/error "Error: No query found for" query-name))
         query (if (:parent query-m)

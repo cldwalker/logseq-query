@@ -1,4 +1,4 @@
-{:property
+{:lq/property
  {:query [:find (pull ?b [*])
           :in $ ?prop ?prop-value %
           :where
@@ -7,7 +7,7 @@
   :desc "List all blocks that have property equal to property value"
   :default-args ["type" "person"]}
 
- :property-all
+ :lq/property-all
  {:query [:find (pull ?b [*])
           :in $ %
           :where
@@ -15,8 +15,8 @@
           [(missing? $ ?b :block/name)]]
   :desc "List all blocks that have properties"}
 
- :property-counts
- {:parent :property-all
+ :lq/property-counts
+ {:parent :lq/property-all
   :result-transform (fn [result]
                       (->> result
                            (map (fn [m] (zipmap (keys (:block/properties m)) (repeat 1))))
@@ -24,7 +24,7 @@
                            (sort-by val >)))
   :desc "Counts for all block properties"}
 
- :has-property
+ :lq/has-property
  {:query [:find (pull ?b [*])
           :in $ ?ks %
           :where
@@ -32,7 +32,7 @@
           (has-property ?b ?k)]
   :desc "List blocks that have given property"}
 
- :task
+ :lq/task
  {:query [:find (pull ?b [*])
           :in $ ?markers %
           :where
@@ -42,14 +42,14 @@
                     (set (map (comp clojure.string/upper-case name) args)))
   :desc "Todos that contain one of the markers"}
 
- :content-search
+ :lq/content-search
  {:query [:find (pull ?b [*])
           :in $ ?query %
           :where
           (block-content ?b ?query)]
   :desc "Full text search on :block/content"}
 
- :property-search
+ :lq/property-search
  {:query [:find (pull ?b [*])
           :in $ ?prop ?query %
           :where
