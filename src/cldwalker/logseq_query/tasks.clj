@@ -7,9 +7,10 @@
   []
   (util/print-table
    (->> (util/get-all-rules)
-        (map #(hash-map :name (name (:name %))
-                        :desc (:desc %)
-                        :namespace (namespace (:name %)))))
+        (map (fn [[rule-name m]]
+               (hash-map :name (name rule-name)
+                         :desc (:desc m)
+                         :namespace (namespace rule-name)))))
    :fields [:name :namespace :desc]))
 
 (defn- add-default-options

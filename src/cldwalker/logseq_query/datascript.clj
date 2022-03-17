@@ -125,7 +125,7 @@
         {:keys [find in]} (parse-query query)
         actual-args (into [] (or (seq args) (:default-args query-m)))
         _ (validate-args actual-args in)
-        rules (map :rule (util/get-all-rules))
+        rules (->> (util/get-all-rules) vals (map :rule))
         q-args (conj actual-args rules)]
     (parser/parse query)
     (wrap-query options
@@ -158,7 +158,7 @@
   [{:keys [arguments options]}]
   (let [query-string (str/join " " arguments)
         db (get-graph-db (:graph options))
-        rules (map :rule (util/get-all-rules))
+        rules (->> (util/get-all-rules) vals (map :rule))
         query (edn/read-string query-string)
         query' (add-find-and-in-defaults
                 (if (keyword? (first query)) query (conj [:where] query)))

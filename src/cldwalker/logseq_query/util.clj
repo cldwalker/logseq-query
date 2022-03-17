@@ -57,16 +57,19 @@
                :page-property "Pages that have property equal to value or that contain the value"
                :page-ref "Blocks associated to given page/tag"
                :task "Tasks that contain one of markers"}]
-    (mapv (fn [[k v]] {:name (keyword "logseq" (name k)) :rule v :desc (descs k)})
-          ;; TODO: Debug issues with upstream property
-          ;; TODO: May need to page page-ref upstream
-          (dissoc rules/query-dsl-rules :property :page-ref))))
+    ;; TODO: Debug issues with upstream property
+    ;; TODO: May need to page page-ref upstream
+    (->> (dissoc rules/query-dsl-rules :property :page-ref)
+         (map (fn [[k v]]
+                [(keyword "logseq" (name k))
+                 {:rule v :desc (descs k)}]))
+         (into {}))))
 
 (defn get-all-rules
   []
-  (into (get-logseq-rules)
-        (into (-> "rules.edn" io/resource slurp edn/read-string)
-              (get-rules (str (fs/expand-home "~/.lq/rules.edn"))))))
+  (merge (get-logseq-rules)
+         (-> "rules.edn" io/resource slurp edn/read-string)
+         (get-rules (str (fs/expand-home "~/.lq/rules.edn")))))
 
 (defn get-queries
   [file]

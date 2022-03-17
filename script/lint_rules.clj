@@ -25,7 +25,9 @@
 
 (defn -main [args]
   (let [rules (->> args
-                   (mapcat util/get-rules)
+                   (map util/get-rules)
+                   (apply merge)
+                   vals
                    (map :rule))
         invalid-unbound-rules (->> rules
                                    (mapcat lint-unbound-rule)
