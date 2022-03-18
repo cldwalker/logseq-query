@@ -58,8 +58,7 @@
                :page-ref "Blocks associated to given page/tag"
                :task "Tasks that contain one of markers"}]
     ;; TODO: Debug issues with upstream property
-    ;; TODO: May need to page page-ref upstream
-    (->> (dissoc rules/query-dsl-rules :property :page-ref)
+    (->> (dissoc rules/query-dsl-rules :property)
          (map (fn [[k v]]
                 [(keyword "logseq" (name k))
                  {:rule v :desc (descs k)}]))

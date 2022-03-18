@@ -4,7 +4,7 @@
  {datascript-transit/datascript-transit {:mvn/version "0.3.0"
                                          :exclusions [datascript/datascript]}
   logseq/logseq {:git/url "https://github.com/logseq/logseq"
-                 :git/sha "b1aa906e8974a421345760f938484c195797a1b2"}
+                 :git/sha "e16297132fe1cfff44277416e22ca744cbc4bd44"}
   io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}}
  :aliases
   ;; Add deps that bb-datascript already provides

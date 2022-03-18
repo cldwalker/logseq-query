@@ -31,7 +31,7 @@
         (clojure (format "-X:bb cldwalker.logseq-query.datascript/q '%s'"
                          (pr-str (add-default-options args))))))
 
-(def q-cli-options
+(def common-options
   [["-h" "--help" "Print help"]
    ["-g" "--graph GRAPH" "Choose a graph"]
    ["-t" "--table" "Render results in a table"]
@@ -39,8 +39,10 @@
    ["-p" "--puget" "Colorize results with puget"]
    ["-P" "--no-puget" :id :puget :parse-fn not]
    ["-c" "--count" "Print count of results"]
-   ["-C" "--block-content" "Only prints :block/content of result"]
-   ["-s" "--silence" "Silence noisy d/q error"]])
+   ["-C" "--block-content" "Print only :block/content of result"]
+   ["-s" "--silence" "Silence noisy errors like d/q error"]])
+
+(def q-cli-options common-options)
 
 (defn q
   "Run a named query"
@@ -48,15 +50,8 @@
   (cli/run-command q* args q-cli-options))
 
 (def sq-cli-options
-  [["-h" "--help" "Print help"]
-   ["-g" "--graph GRAPH" "Choose a graph"]
-   ["-t" "--table" "Render results in a table"]
-   [nil "--table-command COMMAND" "Command to run with --table"]
-   ["-p" "--puget" "Colorize results with puget"]
-   ["-c" "--count" "Print count of results"]
-   ["-C" "--block-content" "Only prints :block/content of result"]
-   ["-n" "--pretend" "Prints the full query that would execute"]
-   ["-s" "--silence" "Silence noisy d/q error"]])
+  (into common-options
+        [["-n" "--pretend" "Print the full query that would execute"]]))
 
 (defn sq*
   [{:keys [options arguments summary] :as args}]
