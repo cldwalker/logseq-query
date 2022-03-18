@@ -153,7 +153,7 @@
               [:in '$ '%]
               (drop 2 query)]))))
 
-(defn qs
+(defn sq
   "Run a shorthand query"
   [{:keys [arguments options]}]
   (let [query-string (str/join " " arguments)

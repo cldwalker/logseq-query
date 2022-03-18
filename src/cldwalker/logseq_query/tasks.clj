@@ -1,9 +1,12 @@
 (ns cldwalker.logseq-query.tasks
+  "Run lq's main tasks. Call out to bb-datascript or clojure depending on what
+  user has installed"
   (:require [cldwalker.logseq-query.util :as util]
             [cldwalker.logseq-query.cli :as cli]
             [babashka.tasks :refer [clojure]]))
 
 (defn rules
+  "List all rules"
   []
   (util/print-table
    (->> (util/get-all-rules)
@@ -40,10 +43,11 @@
    ["-s" "--silence" "Silence noisy d/q error"]])
 
 (defn q
+  "Run a named query"
   [& args]
   (cli/run-command q* args q-cli-options))
 
-(def qs-cli-options
+(def sq-cli-options
   [["-h" "--help" "Print help"]
    ["-g" "--graph GRAPH" "Choose a graph"]
    ["-t" "--table" "Render results in a table"]
@@ -54,22 +58,24 @@
    ["-n" "--pretend" "Prints the full query that would execute"]
    ["-s" "--silence" "Silence noisy d/q error"]])
 
-(defn qs*
+(defn sq*
   [{:keys [options arguments summary] :as args}]
   (cond (or (:help options) (empty? arguments))
         (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
         (System/getenv "BABASHKA_DATASCRIPT")
-        ((requiring-resolve 'cldwalker.logseq-query.datascript/qs)
+        ((requiring-resolve 'cldwalker.logseq-query.datascript/sq)
          (add-default-options args))
         :else
-        (clojure (format "-X:bb cldwalker.logseq-query.datascript/qs '%s'"
+        (clojure (format "-X:bb cldwalker.logseq-query.datascript/sq '%s'"
                          (pr-str (add-default-options args))))))
 
-(defn qs
+(defn sq
+  "Run a short query"
   [& args]
-  (cli/run-command qs* args qs-cli-options))
+  (cli/run-command sq* args sq-cli-options))
 
 (defn graphs
+  "List all graphs"
   []
   (util/print-table
    (map #(hash-map :name (util/full-path->graph %)
@@ -78,6 +84,7 @@
    :fields [:name :path]))
 
 (defn queries
+  "List all queries"
   []
   (util/print-table
    (sort-by :name
