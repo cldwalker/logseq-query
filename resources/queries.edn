@@ -4,8 +4,7 @@
           :where
           [(keyword ?prop) ?prop-k]
           (property ?b ?prop-k ?prop-value)]
-  :desc "List all blocks that have property equal to property value"
-  :default-args ["type" "person"]}
+  :desc "List all blocks that have property equal to property value"}
 
  :lq/property-all
  {:query [:find (pull ?b [*])
