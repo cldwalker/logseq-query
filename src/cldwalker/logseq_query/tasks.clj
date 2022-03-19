@@ -40,7 +40,8 @@
    ["-P" "--no-puget" :id :puget :parse-fn not]
    ["-c" "--count" "Print count of results"]
    ["-C" "--block-content" "Print only :block/content of result"]
-   ["-s" "--silence" "Silence noisy errors like d/q error"]])
+   ["-s" "--silence" "Silence noisy errors like d/q error"]
+   ["-e" "--export" "Print/export query for use with logseq"]])
 
 (def q-cli-options common-options)
 

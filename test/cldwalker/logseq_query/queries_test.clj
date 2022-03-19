@@ -6,6 +6,8 @@
             [clojure.string :as str]
             [cldwalker.logseq-query.datascript :as ld]))
 
+;; Utils
+
 (defn- filter-db
   "Filters datascript db to only contain blocks with given pages"
   [db pages]
@@ -28,6 +30,15 @@
     (ld/q {:arguments args
            :options {:graph "test/cldwalker/logseq_query/test-notes.json"
                      :raw true}})))
+
+(defn- sq [& {:keys [args pages]}]
+  (with-redefs [ld/get-graph-db (fn [graph]
+                                  (filter-db (@#'ld/get-graph-db* graph) pages))]
+    (ld/sq {:arguments args
+            :options {:graph "test/cldwalker/logseq_query/test-notes.json"
+                      :raw true}})))
+
+;; Tests
 
 (deftest property
   (is (= #{{:type "comment" :desc "hi"} {:type "comment" :desc "hola"}}
@@ -87,3 +98,31 @@
           (map (comp :url :block/properties)
                (q :args ["property-search" "url" "https"]
                   :pages #{"test/property-search"}))))))
+
+(deftest sq-queries
+  (is (= #{"blarg\nblargity" "oopsie\nflower:: blarg"}
+         (set
+          (map :block/content
+               (sq :args ["(block-content ?b \"blarg\")"]
+                   :pages #{"test/content-search"}))))
+      "One where clause")
+
+  (is (= #{"oopsie\nflower:: blarg"}
+         (set
+          (map :block/content
+               (sq :args ["[:where (has-property ?b :flower) (block-content ?b \"blarg\")]"]
+                   :pages #{"test/content-search"}))))
+      "Two where clauses")
+
+  (is (= [true true]
+         (map integer?
+              (sq :args ["[:find ?b :where (block-content ?b \"blarg\")]"]
+                  :pages #{"test/content-search"})))
+      "Where with :find")
+
+  (is (= #{"blarg\nblargity" "oopsie\nflower:: blarg"}
+         (set
+          (map :block/content
+               (sq :args ["[:in $ % :where (block-content ?b \"blarg\")]"]
+                   :pages #{"test/content-search"}))))
+      "Where with :in"))

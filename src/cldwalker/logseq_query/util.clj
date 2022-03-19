@@ -6,6 +6,8 @@
             [babashka.fs :as fs]
             [frontend.db.rules :as rules]))
 
+;; Misc fns
+
 (def default-opts
   {:in :inherit
    :out :inherit
@@ -42,6 +44,13 @@
               (p/tokenize cmd))
         cmd (into cmd args)]
     @(p/process prev cmd (merge default-opts opts))))
+
+(defn print-table
+  [rows & {:keys [fields]}]
+  (if fields (pprint/print-table fields rows) (pprint/print-table rows))
+  (println "Total:" (count rows)))
+
+;; Config fns
 
 (defn get-rules
   [file]
@@ -88,6 +97,8 @@
       (-> config-file slurp edn/read-string)
       {})))
 
+;; Graph fns
+
 (defn get-graph-paths
   []
   (let [dir (fs/expand-home "~/.logseq/graphs")]
@@ -102,8 +113,3 @@
   [graph]
   (some #(when (= graph (full-path->graph %)) %)
         (get-graph-paths)))
-
-(defn print-table
-  [rows & {:keys [fields]}]
-  (if fields (pprint/print-table fields rows) (pprint/print-table rows))
-  (println "Total:" (count rows)))
