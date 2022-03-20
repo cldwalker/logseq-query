@@ -146,14 +146,14 @@
         rules (get-rules-in-query query-map)
         args-count (count (set/difference (set in) #{'% '$}))
         inputs (cond-> []
-                       (pos? args-count)
-                       (into (repeat args-count "TODO"))
-                       true
-                       (conj rules))
+                 (pos? args-count)
+                 (into (repeat args-count "TODO"))
+                 true
+                 (conj rules))
         export (cond-> {:query (ensure-in-with-rules query-map)
                         :inputs inputs}
-                       result-transform
-                       (assoc :result-transform result-transform))]
+                 result-transform
+                 (assoc :result-transform result-transform))]
     (pprint/pprint export)))
 
 ;; q command
@@ -235,10 +235,6 @@
   [{:keys [arguments options]}]
   (let [query-string (str/join " " arguments)
         query (expand-query (edn/read-string query-string))]
-    (cond
-      (:export options)
+    (if (:export options)
       (print-logseq-query {:query query})
-      (:pretend options)
-      (pprint/pprint {:query query})
-      :else
       (sq* query options))))

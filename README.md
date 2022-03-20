@@ -62,9 +62,10 @@ your `GRAPH`:
 echo '{:default-options {:graph "GRAPH"}}' > ~/.lq/config.edn
 ```
 
-`lq` comes with a few named queries and rules:
+Let's look at some query and rule commands:
 
 ```sh
+# List queries including ones you define
 $ lq queries
 
 |           :name | :namespace |          :parent |                                                      :desc |
@@ -78,13 +79,17 @@ $ lq queries
 |            task |         lq |                  |                      Todos that contain one of the markers |
 Total: 7
 
-# Queries can be run by their :name
+# Queries run by their :name
 $ lq q content-search foo
 ...
 
-# If two queries that have the same base name, invoke their full name i.e. :namespace/:name
+# If two queries have the same :name, invoke their full name i.e. :namespace/:name
 $ lq q lq/content-search foo
 
+# Queries can be exported and used in logseq! Here we copy that to osx's clipboard
+$ lq q content-search -e | pbcopy
+
+# List rules including ones you define
 $ lq rules
 
 |             :name | :namespace |                                                             :desc |
@@ -162,7 +167,7 @@ $ lq sq '[:find ?b :where (content-search ?b "github.com/") (task ?b #{"DONE"})]
 ...
 
 # To print what the full query looks like
-$ lq sq '[:find ?b :where (content-search ?b "github.com/") (task ?b #{"DONE"})]' -n
+$ lq sq '[:find ?b :where (content-search ?b "github.com/") (task ?b #{"DONE"})]' -e
 ```
 
 The `sq` command supports most of the `q` options. For the full list of

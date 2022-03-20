@@ -50,9 +50,7 @@
   [& args]
   (cli/run-command q* args q-cli-options))
 
-(def sq-cli-options
-  (into common-options
-        [["-n" "--pretend" "Print the full query that would execute"]]))
+(def sq-cli-options common-options)
 
 (defn sq*
   [{:keys [options arguments summary] :as args}]
