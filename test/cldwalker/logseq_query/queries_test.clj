@@ -110,7 +110,7 @@
   (is (= #{"oopsie\nflower:: blarg"}
          (set
           (map :block/content
-               (sq :args ["[:where (has-property ?b :flower) (block-content ?b \"blarg\")]"]
+               (sq :args ["[(has-property ?b :flower) (block-content ?b \"blarg\")]"]
                    :pages #{"test/content-search"}))))
       "Two where clauses")
 

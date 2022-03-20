@@ -2,6 +2,7 @@
   (:require [clojure.test :refer [is deftest testing]]
             [cldwalker.logseq-query.cli :as cli]
             [cldwalker.logseq-query.datascript :as ld]
+            [cldwalker.logseq-query.util :as util]
             [clojure.edn :as edn]))
 
 (defn- q-error [args]
@@ -35,20 +36,26 @@
                            :options {:graph "test/cldwalker/logseq_query/test-notes.json"}})))))
 
 (deftest export-option
-  (is (= {:query '[:find (pull ?b [*]) :in $ ?query % :where (block-content ?b ?query)]
-          :inputs '[[[(block-content ?b ?query)
-                      [?b :block/content ?content]
-                      [(clojure.string/includes? ?content ?query)]]]]}
-         (edn/read-string
-          (with-out-str
-            (ld/q {:arguments ["content-search"] :options {:export true}}))))
-      "Works with q")
+  (let [rule (:rule (:logseq/block-content (util/get-all-rules)))]
+    (is (= {:query '[:find (pull ?b [*]) :in $ ?query % :where (block-content ?b ?query)]
+            :inputs ["TODO" [rule]]}
+           (edn/read-string
+            (with-out-str
+              (ld/q {:arguments ["content-search"] :options {:export true}}))))
+        "Works with q")
 
-  (is (= {:query '[:find (pull ?b [*]) :in $ % :where (block-content ?b "wow")]
-          :inputs '[[[(block-content ?b ?query)
-                      [?b :block/content ?content]
-                      [(clojure.string/includes? ?content ?query)]]]]}
-         (edn/read-string
-          (with-out-str
-            (ld/sq {:arguments ["(block-content ?b \"wow\")"] :options {:export true}}))))
-      "Works with sq"))
+    (is (= {:query '[:find (pull ?b [*])
+                     :in $ %
+                     :where [?b :block/properties _] [(missing? $ ?b :block/name)]]
+            :inputs [[]]}
+           (edn/read-string
+            (with-out-str
+              (ld/q {:arguments ["property-all"] :options {:export true}}))))
+        "Works with q and dynamic :in")
+
+    (is (= {:query '[:find (pull ?b [*]) :in $ % :where (block-content ?b "wow")]
+            :inputs [[rule]]}
+           (edn/read-string
+            (with-out-str
+              (ld/sq {:arguments ["(block-content ?b \"wow\")"] :options {:export true}}))))
+        "Works with sq")))

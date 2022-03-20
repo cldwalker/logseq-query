@@ -26,16 +26,27 @@
   (or (get-graph-db* graph)
       (cli/error (str "No graph found for " (pr-str graph)))))
 
-;; Datalog util fns
+;; datalog util fns
 
 ;; From earlier version of datascript
-(defn- parse-query [query]
-  (loop [parsed {} key nil qs query]
+(defn- query-vec->map
+  "Convert query vec to query map and preserve insertion order with array-map"
+  [query]
+  (loop [parsed (array-map) key nil qs query]
     (if-let [q (first qs)]
       (if (keyword? q)
         (recur parsed q (next qs))
         (recur (update-in parsed [key] (fnil conj []) q) key (next qs)))
       parsed)))
+
+(defn query-map->vec
+  "Converts query map to vec"
+  [query-map]
+  (vec
+   (reduce (fn [acc [k v]]
+             (concat acc [k] v))
+           '()
+           query-map)))
 
 (defn- find-rules-in-where
   "Given where clauses and a set of valid rules, returns rules found in where
@@ -52,6 +63,17 @@
   (and (= 1 (count find))
        (or (not (coll? (first find)))
            (and (coll? (first find)) (= 'pull (ffirst find))))))
+
+(defn- ensure-in-with-rules
+  [{:keys [in] :as query-map}]
+  (query-map->vec
+   (if in
+     (if (not (contains? (set in) '%))
+       (update query-map :in conj '%)
+       query-map)
+     (merge (array-map :find (:find query-map)
+                       :in ['$ '%])
+            (dissoc query-map :find)))))
 
 ;; Common query fns
 
@@ -110,20 +132,28 @@
     (f)))
 
 (defn- get-rules-in-query
-  [query]
+  [{:keys [where]}]
   (let [rules (util/get-all-rules)
         rules' (merge rules
                       ;; shortened names
                       (update-keys rules #(keyword (name %))))
-        {:keys [where]} (parse-query query)
         rules-found (find-rules-in-where where (-> rules' keys set))]
     (mapv (comp :rule rules') rules-found)))
 
 (defn- print-logseq-query
-  [query]
-  (let [rules (get-rules-in-query query)
-        export {:query query
-                :inputs [rules]}]
+  [{:keys [query result-transform]}]
+  (let [{:keys [in] :as query-map} (query-vec->map query)
+        rules (get-rules-in-query query-map)
+        args-count (count (set/difference (set in) #{'% '$}))
+        inputs (cond-> []
+                       (pos? args-count)
+                       (into (repeat args-count "TODO"))
+                       true
+                       (conj rules))
+        export (cond-> {:query (ensure-in-with-rules query-map)
+                        :inputs inputs}
+                       result-transform
+                       (assoc :result-transform result-transform))]
     (pprint/pprint export)))
 
 ;; q command
@@ -154,15 +184,16 @@
         args (if (and (seq args) args-transform)
                [(eval (list args-transform (vec args)))]
                args)
-        {:keys [find in]} (parse-query query)
+        {:keys [find in] :as query-map} (query-vec->map query)
         actual-args (into [] (or (seq args) (:default-args query-m)))
         _ (validate-args actual-args in)
-        rules (get-rules-in-query query)
-        q-args (conj actual-args rules)]
-    (parser/parse query)
+        rules (get-rules-in-query query-map)
+        q-args (conj actual-args rules)
+        query' (ensure-in-with-rules query-map)]
+    (parser/parse query')
     (wrap-query options
                 (fn []
-                  (q-and-print-results query
+                  (q-and-print-results query'
                                        (into [db] q-args)
                                        options
                                        {:find find
@@ -174,50 +205,40 @@
   (let [[query-name & args] arguments
         query-m (get-query query-name)]
     (if (:export options)
-      (print-logseq-query (:query query-m))
+      (print-logseq-query query-m)
       (q* query-m args options))))
 
 ;; sq command
 
-(defn- add-find-and-in-defaults
-  "Adds defaults to :find and :in if they are not present in vec query"
-  [query]
-  (case (first query)
-    :where
-    (into [:find '(pull ?b [*]) :in '$ '%]
-          query)
-    :in
-    (into [:find '(pull ?b [*])] query)
-    :find
-    (if (= :in (nth query 2))
-      query
-      (apply concat
-             [(take 2 query)
-              [:in '$ '%]
-              (drop 2 query)]))))
-
 (defn- sq*
   [query options]
-  (let [{:keys [find]} (parse-query query)
+  (let [{:keys [find] :as query-map} (query-vec->map query)
         db (get-graph-db (:graph options))
-        rules (get-rules-in-query query)]
+        rules (get-rules-in-query query-map)]
     (parser/parse query)
     (wrap-query
      options
      (fn []
        (q-and-print-results query [db rules] options {:find find})))))
 
+(defn- expand-query
+  [query]
+  (let [query' (if (keyword? (first query))
+                 query
+                 (into [:where] (if (vector? query) query [query])))
+        query-map (merge (array-map :find ['(pull ?b [*])])
+                         (query-vec->map query'))]
+    (ensure-in-with-rules query-map)))
+
 (defn sq
   "Run a shorthand query"
   [{:keys [arguments options]}]
   (let [query-string (str/join " " arguments)
-        query (edn/read-string query-string)
-        query' (add-find-and-in-defaults
-                (if (keyword? (first query)) query (conj [:where] query)))]
+        query (expand-query (edn/read-string query-string))]
     (cond
       (:export options)
-      (print-logseq-query query')
+      (print-logseq-query {:query query})
       (:pretend options)
-      (pprint/pprint {:query query'})
+      (pprint/pprint {:query query})
       :else
-      (sq* query' options))))
+      (sq* query options))))

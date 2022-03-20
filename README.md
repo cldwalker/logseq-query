@@ -153,8 +153,8 @@ Some examples:
 $ lq sq '(content-search ?b "github.com/")'
 ...
 
-# For larger where clauses, wrap it in a vector with :where
-$ lq sq '[:where (content-search ?b "github.com/") (task ?b #{"DONE"})]'
+# For multiple where clauses, wrap it in a vector
+$ lq sq '[(content-search ?b "github.com/") (task ?b #{"DONE"})]'
 ...
 
 # Queries without a :find default to `(pull ?b [*])`. This can be overridden with an explicit :find
@@ -236,11 +236,11 @@ other queries:
 :desc "Github tasks"]}
 ```
 
-With this rule defined, use it in a quick query to find github tasks that
+With this rule defined, use it in a short query to find github tasks that
 contain the word logseq e.g.
 
 ```sh
-lq sq '[:where (github-task ?b #{"TODO"}) [?b :block/content "logseq"]]'
+lq sq '[(github-task ?b #{"TODO"}) [?b :block/content "logseq"]]'
 ```
 
 ## Config

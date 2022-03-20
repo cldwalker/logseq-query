@@ -8,7 +8,6 @@
 
  :lq/property-all
  {:query [:find (pull ?b [*])
-          :in $ %
           :where
           [?b :block/properties _]
           [(missing? $ ?b :block/name)]]
