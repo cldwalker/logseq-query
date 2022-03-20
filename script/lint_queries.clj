@@ -29,7 +29,7 @@
 
 (defn -main [args]
   (let [queries (->> args
-                     (map util/get-queries)
+                     (map util/read-config-file)
                      (apply merge)
                      (remove (fn [[_k v]] (nil? (:query v)))))
         invalid-queries (->> queries

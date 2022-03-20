@@ -52,11 +52,11 @@
 
 ;; Config fns
 
-(defn get-rules
+(defn read-config-file
   [file]
   (if (fs/exists? file)
     (-> file slurp edn/read-string)
-    []))
+    {}))
 
 (defn- get-logseq-rules
   []
@@ -77,25 +77,16 @@
   []
   (merge (get-logseq-rules)
          (-> "rules.edn" io/resource slurp edn/read-string)
-         (get-rules (str (fs/expand-home "~/.lq/rules.edn")))))
-
-(defn get-queries
-  [file]
-  (if (fs/exists? file)
-    (-> file slurp edn/read-string)
-    {}))
+         (read-config-file (str (fs/expand-home "~/.lq/rules.edn")))))
 
 (defn get-all-queries
   []
   (merge (-> "queries.edn" io/resource slurp edn/read-string)
-         (get-queries (str (fs/expand-home "~/.lq/queries.edn")))))
+         (read-config-file (str (fs/expand-home "~/.lq/queries.edn")))))
 
 (defn get-config
   []
-  (let [config-file (str (fs/expand-home "~/.lq/config.edn"))]
-    (if (fs/exists? config-file)
-      (-> config-file slurp edn/read-string)
-      {})))
+  (read-config-file (str (fs/expand-home "~/.lq/config.edn"))))
 
 ;; Graph fns
 

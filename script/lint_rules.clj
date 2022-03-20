@@ -25,7 +25,7 @@
 
 (defn -main [args]
   (let [rules (->> args
-                   (map util/get-rules)
+                   (map util/read-config-file)
                    (apply merge)
                    vals
                    (map :rule))
