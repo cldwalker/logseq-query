@@ -34,14 +34,15 @@
 (def common-options
   [["-h" "--help" "Print help"]
    ["-g" "--graph GRAPH" "Choose a graph"]
+   ["-e" "--export" "Print/export query for use with logseq"]
    ["-t" "--table" "Render results in a table"]
    [nil "--table-command COMMAND" "Command to run with --table"]
    ["-p" "--puget" "Colorize results with puget"]
    ["-P" "--no-puget" :id :puget :parse-fn not]
    ["-c" "--count" "Print count of results"]
    ["-C" "--block-content" "Print only :block/content of result"]
-   ["-s" "--silence" "Silence noisy errors like d/q error"]
-   ["-e" "--export" "Print/export query for use with logseq"]])
+   ["-T" "--tag-counts" "Print tag counts for query results"]
+   ["-s" "--silence" "Silence noisy errors like d/q error"]])
 
 (def q-cli-options common-options)
 

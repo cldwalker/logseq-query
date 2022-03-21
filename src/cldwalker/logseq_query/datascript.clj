@@ -77,6 +77,36 @@
 
 ;; Common query fns
 
+(def option-transformations
+  {:tag-counts
+   {:query {:find ['(pull ?b [* {:block/refs [:db/id :block/name]}])]}
+    :result-transform (fn [result]
+                        (->> result
+                             (mapcat (fn [m] (map :block/name (:block/refs m))))
+                             frequencies
+                             (sort-by val >)))}})
+
+(defn- process-query
+  "Process query with options"
+  [query options]
+  (cond-> (query-vec->map query)
+          ;; Would be helpful to fail if find is not ?b
+          (:tag-counts options)
+          (merge (get-in option-transformations [:tag-counts :query]))
+          true
+          ensure-in-with-rules))
+
+(defn- process-query-m
+  "Process top-level query map"
+  [query-m options]
+  (cond-> query-m
+          (:tag-counts options)
+          (assoc :result-transform
+                 (get-in option-transformations [:tag-counts :result-transform]))
+          true
+          (update :query process-query options)))
+
+
 (defn- print-table [rows table-command]
   (if table-command
     (-> (util/shell {:out :string} "echo" (pr-str rows))
@@ -117,10 +147,10 @@
                          (map identity))
         res (apply d/q query query-args)
         res' (cond-> (into [] post-transduce res)
-               (:count options)
-               count
-               result-transform
-               ((fn [x] (eval (list result-transform x)))))]
+                     (:count options)
+                     count
+                     result-transform
+                     ((fn [x] (eval (list result-transform x)))))]
     (print-results res' options)))
 
 (defn- wrap-query
@@ -150,7 +180,7 @@
                  (into (repeat args-count "TODO"))
                  true
                  (conj rules))
-        export (cond-> {:query (ensure-in-with-rules query-map)
+        export (cond-> {:query query
                         :inputs inputs}
                  result-transform
                  (assoc :result-transform result-transform))]
@@ -188,12 +218,11 @@
         actual-args (into [] (or (seq args) (:default-args query-m)))
         _ (validate-args actual-args in)
         rules (get-rules-in-query query-map)
-        q-args (conj actual-args rules)
-        query' (ensure-in-with-rules query-map)]
-    (parser/parse query')
+        q-args (conj actual-args rules)]
+    (parser/parse query)
     (wrap-query options
                 (fn []
-                  (q-and-print-results query'
+                  (q-and-print-results query
                                        (into [db] q-args)
                                        options
                                        {:find find
@@ -203,7 +232,7 @@
   "Run a query given it's name and args"
   [{:keys [arguments options]}]
   (let [[query-name & args] arguments
-        query-m (get-query query-name)]
+        query-m (process-query-m (get-query query-name) options)]
     (if (:export options)
       (print-logseq-query query-m)
       (q* query-m args options))))
@@ -211,7 +240,7 @@
 ;; sq command
 
 (defn- sq*
-  [query options]
+  [{:keys [query] :as query-m} options]
   (let [{:keys [find] :as query-map} (query-vec->map query)
         db (get-graph-db (:graph options))
         rules (get-rules-in-query query-map)]
@@ -219,7 +248,11 @@
     (wrap-query
      options
      (fn []
-       (q-and-print-results query [db rules] options {:find find})))))
+       (q-and-print-results query
+                            [db rules]
+                            options
+                            {:find find
+                             :result-transform (:result-transform query-m)})))))
 
 (defn- expand-query
   [query]
@@ -228,13 +261,14 @@
                  (into [:where] (if (vector? query) query [query])))
         query-map (merge (array-map :find ['(pull ?b [*])])
                          (query-vec->map query'))]
-    (ensure-in-with-rules query-map)))
+    (query-map->vec query-map)))
 
 (defn sq
   "Run a shorthand query"
   [{:keys [arguments options]}]
   (let [query-string (str/join " " arguments)
-        query (expand-query (edn/read-string query-string))]
+        query (expand-query (edn/read-string query-string))
+        query-m (process-query-m {:query query} options)]
     (if (:export options)
-      (print-logseq-query {:query query})
-      (sq* query options))))
+      (print-logseq-query query-m)
+      (sq* query-m options))))

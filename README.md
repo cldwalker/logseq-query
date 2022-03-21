@@ -132,18 +132,32 @@ $ lq q property type digital-garden | bb '(->> *input* (map #(-> % :block/proper
 
 * `-c`: Prints the count of the results
 * `-p`: Colorizes and pretty prints results with [puget](https://github.com/greglook/puget), assuming `puget` is available as a command
-* `-C`: Prints only the contents of block results. This is useful as it allows you to search through query results easily, which is not possible with logseq
+* `-C`: Prints only the contents of block results. This is useful to search
+  through query results easily, which is not possible with logseq
+  ```sh
+  $ lq q content-search babashka -C |grep blog
+  desc:: another #babashka script for a custom blog but this time with netlify
+  ...
+  ```
 * `-t`: Prints results in a table. If it's a block, it will print the :block/properties e.g.
 
-```sh
-$ lq q property type digital-garden -t
-|  :id |                                     :url |          :type |                                    :desc |
-|------+------------------------------------------+----------------+------------------------------------------|
-| 3407 |   https://note.xuanwo.io/#/page/database | digital-garden | Great to see one with active use of type |
-| 6674 |     https://kvistgaard.github.io/sparql/ | digital-garden |        sparql tutorials made with logseq |
-| 6600 | https://zettelkasten.sorenbjornstad.com/ | digital-garden | "remnote employee, made with tiddlywiki" |
-...
-```
+  ```sh
+  $ lq q property type digital-garden -t
+  |  :id |                                     :url |          :type |                                    :desc |
+  |------+------------------------------------------+----------------+------------------------------------------|
+  | 3407 |   https://note.xuanwo.io/#/page/database | digital-garden | Great to see one with active use of type |
+  | 6674 |     https://kvistgaard.github.io/sparql/ | digital-garden |        sparql tutorials made with logseq |
+  | 6600 | https://zettelkasten.sorenbjornstad.com/ | digital-garden | "remnote employee, made with tiddlywiki" |
+  ...
+  ```
+* `--tag-counts`: Prints tag counts sorted most to least for any query returning blocks
+  ```sh
+  $ lq q content-search babashka --tag-counts
+  (["todo" 5]
+   ["done" 3]
+   ["eng" 2]
+   ...
+  ```
 
 For more options, see `lq q -h`.
 
