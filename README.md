@@ -309,18 +309,37 @@ to group `:where` clauses in a query. Rules are maps with the following keys:
 
 This project aims to empower logseq users to access and transform their
 knowledge in fine-grained ways from the commandline. This project is also a
-great way to experiment with querying. Since this is a
-commandline tool, hopefully this inspires folks to script/automate their Logseq
-graphs. Personally, I've found this fun as datalog on the commandline with
-sub second startup times has not been a thing until babashka.
+great place to experiment with querying. Since this is a commandline tool,
+hopefully this inspires folks to script/automate their logseq graphs.
+
+## Development
+
+### REPL
+
+Interacting via a REPL is possible through `lq bb ...`. `lq bb` starts a repl
+and `lq bb socket-repl PORT` starts a socket repl to connect your editor to.
+`cldwalker.logseq-query.tasks` ns is for non query fns and
+`cldwalker.logseq-query.datascript` is for query fns.
+
+### Testing
+
+Run all tests with `clj -X:bb:test`.
+
+End to end query tests are in `cldwalker.logseq-query.queries-test`. These tests
+query against the logseq graph `test-notes`. Each query/test has its own pages
+and is isolated from others thanks to `datascript.core/filter`. To add a new
+test:
+* Add a new test page and relevant data to the graph, with logseq!
+* With logseq >= 0.6.3, run the command `Save current graph to disk` to save the
+  graph to ~/.logseq.
+* Run `bb copy-test-db` to copy the logseq db under `test/`.
 
 ## Contributing
 
 I'm not seeking major contributions to this project though discussion and issues
 on github are always welcome. I may be interested in a query or rule
-contribution if it's general enough. For those contributions, I would look for a
-test page to be added to the `test-notes` graph and tests to be added to
-`cldwalker.logseq-query.queries-test`.
+contribution if it's general enough. For those contributions, I would want a test for
+the new functionality. See [testing](#testing) for more.
 
 ## License
 See LICENSE.md
@@ -328,4 +347,4 @@ See LICENSE.md
 ## Additional Links
 * [Datalevin](https://github.com/juji-io/datalevin#babashka-pod) - another datalog
 db that can be scripted with babashka
-* [Zsh autocompletion for lq](https://github.com/cldwalker/dotfiles/blob/181c90681e93170cc682f6e96f8fc169675b760d/.zsh/completions.zsh#L63-L69)
+* [Zsh autocompletion for lq](https://github.com/cldwalker/dotfiles/blob/3dc9c725f265eafff0218f6c7c3719f8d0e8e317/.zsh/completions.zsh#L63-L69)

@@ -229,7 +229,9 @@
                                         :result-transform (:result-transform query-m)})))))
 
 (defn q
-  "Run a query given it's name and args"
+  "Run a query given it's name and args. Takes options that are documented in
+  tasks/q-cli-options. One additional option is :raw which when set to true
+  returns the result and is useful for the repl "
   [{:keys [arguments options]}]
   (let [[query-name & args] arguments
         query-m (process-query-m (get-query query-name) options)]
@@ -264,7 +266,9 @@
     (query-map->vec query-map)))
 
 (defn sq
-  "Run a shorthand query"
+  "Run a shorthand query. Takes options that are documented in
+  tasks/sq-cli-options. One additional option is :raw which when set to true
+  returns the result and is useful for the repl "
   [{:keys [arguments options]}]
   (let [query-string (str/join " " arguments)
         query (expand-query (edn/read-string query-string))
