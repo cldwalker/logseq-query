@@ -100,12 +100,19 @@
                   :pages #{"test/property-search"}))))))
 
 (deftest sq-queries
+  (is (= #{"ipsum"}
+         (set
+          (map :block/content
+               (sq :args ["[?b :block/content \"ipsum\"]"]
+                   :pages #{"test/content-search"}))))
+      "One where clause")
+
   (is (= #{"blarg\nblargity" "oopsie\nflower:: blarg"}
          (set
           (map :block/content
                (sq :args ["(block-content ?b \"blarg\")"]
                    :pages #{"test/content-search"}))))
-      "One where clause")
+      "One where clause with a rule")
 
   (is (= #{"oopsie\nflower:: blarg"}
          (set

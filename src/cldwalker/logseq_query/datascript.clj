@@ -260,7 +260,9 @@
   [query]
   (let [query' (if (keyword? (first query))
                  query
-                 (into [:where] (if (vector? query) query [query])))
+                 (into [:where]
+                       (if (and (vector? query) (not (symbol? (first query))))
+                         query [query])))
         query-map (merge (array-map :find ['(pull ?b [*])])
                          (query-vec->map query'))]
     (query-map->vec query-map)))

@@ -1,9 +1,9 @@
 ## Description
 
-`lq` is a commandline tool for querying your [logseq](https://logseq.com/)
-knowledge graphs. `lq` makes it easy to define custom datalog queries and rules
-and invoke them from the commandline. Rules and queries can be composed to make
-complex queries easy to write and run.
+`lq` is a commandline tool for querying your
+[logseq](https://logseq.com/) knowledge graphs. `lq` makes it easy to define
+custom datalog queries and rules and invoke them from the commandline. Rules and
+queries can be composed to make complex queries easy to write and run.
 
 ## Setup
 
