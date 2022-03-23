@@ -13,8 +13,9 @@
         (map (fn [[rule-name m]]
                (hash-map :name (name rule-name)
                          :desc (:desc m)
+                         :args (pr-str (first (:rule m)))
                          :namespace (namespace rule-name)))))
-   :fields [:name :namespace :desc]))
+   :fields [:name :namespace :args :desc]))
 
 (defn- add-default-options
   [args]

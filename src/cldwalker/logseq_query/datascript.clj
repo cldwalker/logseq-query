@@ -233,8 +233,10 @@
        (remove #{'% '$} in)))
 
 (defn- print-query-help
-  [query-name query summary]
-  (let [args (->> query query-vec->map :in in-args (map str/upper-case))]
+  [query-name {:keys [query usage]} summary]
+  (let [args (if usage
+               [usage]
+               (->> query query-vec->map :in in-args (map str/upper-case)))]
     (cli/print-summary
      (str " " (str/join " " (into [query-name] args))) summary)))
 
@@ -247,7 +249,7 @@
         query-m (process-query-m (get-query query-name) options)]
     (cond
       (:help options)
-      (print-query-help query-name (:query query-m) summary)
+      (print-query-help query-name query-m summary)
       (:export options)
       (print-logseq-query query-m)
       :else

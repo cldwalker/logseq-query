@@ -292,9 +292,10 @@ This file defines custom queries similar to [logseq's advanced queries](https://
 * `:parent` (keyword): Refer to an existing query in order to inherit its key
   values. The most common use case is to apply different result-transforms on
   the same query
+* `:result-transform` (fn): Fn to transforms query results. Same as logseq
 * `:default-args` (vector): Default arguments to pass to query if none are given
 * `:args-transform` (fn): Fn to transform arguments
-* `:result-transform` (fn): Fn to transforms query results. Same as logseq
+* `:usage` (string): Argument string to print for help. Useful when args are transformed
 
 ### rules.edn
 

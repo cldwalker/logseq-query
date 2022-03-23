@@ -36,6 +36,7 @@
           :where
           (task ?b ?markers)]
   :default-args [#{"TODO" "DOING"}]
+  :usage "MARKER [& MARKERS]"
   :args-transform (fn [args]
                     (set (map (comp clojure.string/upper-case name) args)))
   :desc "Todos that contain one of the markers"}
