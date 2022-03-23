@@ -91,21 +91,20 @@
   [query options]
   (cond-> (query-vec->map query)
           ;; Would be helpful to fail if find is not ?b
-          (:tag-counts options)
-          (merge (get-in option-transformations [:tag-counts :query]))
-          true
-          ensure-in-with-rules))
+    (:tag-counts options)
+    (merge (get-in option-transformations [:tag-counts :query]))
+    true
+    ensure-in-with-rules))
 
 (defn- process-query-m
   "Process top-level query map"
   [query-m options]
   (cond-> query-m
-          (:tag-counts options)
-          (assoc :result-transform
-                 (get-in option-transformations [:tag-counts :result-transform]))
-          true
-          (update :query process-query options)))
-
+    (:tag-counts options)
+    (assoc :result-transform
+           (get-in option-transformations [:tag-counts :result-transform]))
+    true
+    (update :query process-query options)))
 
 (defn- print-table [rows table-command]
   (if table-command
@@ -147,10 +146,10 @@
                          (map identity))
         res (apply d/q query query-args)
         res' (cond-> (into [] post-transduce res)
-                     (:count options)
-                     count
-                     result-transform
-                     ((fn [x] (eval (list result-transform x)))))]
+               (:count options)
+               count
+               result-transform
+               ((fn [x] (eval (list result-transform x)))))]
     (print-results res' options)))
 
 (defn- wrap-query
@@ -228,15 +227,30 @@
                                        {:find find
                                         :result-transform (:result-transform query-m)})))))
 
+(defn- in-args
+  [in]
+  (map #(str/replace-first (name %) #"^\?" "")
+       (remove #{'% '$} in)))
+
+(defn- print-query-help
+  [query-name query summary]
+  (let [args (->> query query-vec->map :in in-args (map str/upper-case))]
+    (cli/print-summary
+     (str " " (str/join " " (into [query-name] args))) summary)))
+
 (defn q
   "Run a query given it's name and args. Takes options that are documented in
   tasks/q-cli-options. One additional option is :raw which when set to true
   returns the result and is useful for the repl "
-  [{:keys [arguments options]}]
+  [{:keys [arguments options summary]}]
   (let [[query-name & args] arguments
         query-m (process-query-m (get-query query-name) options)]
-    (if (:export options)
+    (cond
+      (:help options)
+      (print-query-help query-name (:query query-m) summary)
+      (:export options)
       (print-logseq-query query-m)
+      :else
       (q* query-m args options))))
 
 ;; sq command

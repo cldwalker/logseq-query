@@ -21,8 +21,8 @@
   (update-in args [:options] #(merge (:default-options (util/get-config)) %)))
 
 (defn q*
-  [{:keys [options arguments summary] :as args}]
-  (cond (or (:help options) (empty? arguments))
+  [{:keys [arguments summary] :as args}]
+  (cond (empty? arguments)
         (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
         (System/getenv "BABASHKA_DATASCRIPT")
         ((requiring-resolve 'cldwalker.logseq-query.datascript/q)
