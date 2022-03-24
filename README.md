@@ -1,9 +1,10 @@
 ## Description
 
-`lq` is a commandline tool for querying your
-[logseq](https://logseq.com/) knowledge graphs. `lq` makes it easy to define
-custom datalog queries and rules and invoke them from the commandline. Rules and
-queries can be composed to make complex queries easy to write and run.
+`lq` is a commandline tool for querying your [logseq](https://logseq.com/)
+knowledge graphs. `lq` makes it easy to define custom datalog queries and rules
+and invoke them from the commandline. Rules and queries are just [EDN
+data](https://github.com/edn-format/edn) and can be composed to make complex
+queries easy to read and write.
 
 ## Setup
 
@@ -37,7 +38,10 @@ doc](https://github.com/babashka/babashka/blob/master/doc/build.md).
 
 ## Usage
 
-_Note_: This readme assumes basic familiarity with datalog queries. For a primer
+For the visual learners, [check out the
+demo](https://www.youtube.com/watch?v=h8bEwKHY4rI)!
+
+_Note_: This section assumes basic familiarity with datalog queries. For a primer
 on them, see http://www.learndatalogtoday.org/. Also, if `lq` is not on your
 `$PATH`, replace `lq` with `bin/lq` in the examples.
 
@@ -242,6 +246,10 @@ them with `:in` and `:args-transform` keys respectively. For example:
 
 This query can now be called with arguments e.g. `lq q github-tasks todo doing`.
 
+It's worth noting that queries can use any of the rules that come with `lq` e.g.
+`content-search` as well as _any_ you define. Just _use_ the rules and `lq`
+will figure out how to pull the rules into your query.
+
 ### Create a rule
 
 Datalog rules allow you to bundle multiple where clauses behind one clause. They
@@ -317,7 +325,9 @@ to group `:where` clauses in a query. Rules are maps with the following keys:
 This project aims to empower logseq users to access and transform their
 knowledge in fine-grained ways from the commandline. This project is also a
 great place to experiment with querying. Since this is a commandline tool,
-hopefully this inspires folks to script/automate their logseq graphs.
+hopefully this inspires folks to script their logseq graphs and try useful
+things with them e.g. querying across graphs, joining graphs with external data
+sources, running queries in CI, etc.
 
 ## Development
 
@@ -350,6 +360,11 @@ the new functionality. See [testing](#testing) for more.
 
 ## License
 See LICENSE.md
+
+## Credits
+* 🪵 Logseq - For being the fastest, user-friendliest triples editor I've seen yet
+* 🔥 Babashka - For making blazing Clojure CLIs possible
+* 📀 Datascript - For bringing a modern, open-source datalog to the frontend and backend
 
 ## Additional Links
 * [Datalevin](https://github.com/juji-io/datalevin#babashka-pod) - another datalog
