@@ -362,9 +362,12 @@ the new functionality. See [testing](#testing) for more.
 See LICENSE.md
 
 ## Credits
-* 🪵 Logseq - For being the fastest, user-friendliest triples editor I've seen yet
-* 🔥 Babashka - For making blazing Clojure CLIs possible
-* 📀 Datascript - For bringing a modern, open-source datalog to the frontend and backend
+* 🪵 [Logseq](https://github.com/logseq/logseq) - For being the fastest,
+  user-friendliest triples editor I've seen yet
+* 🔥 [Babashka](https://github.com/babashka/babashka) - For making blazing
+  Clojure CLIs possible
+* 📀 [Datascript](https://github.com/tonsky/datascript) - For bringing a modern,
+  open-source datalog to the frontend and backend
 
 ## Additional Links
 * [Datalevin](https://github.com/juji-io/datalevin#babashka-pod) - another datalog

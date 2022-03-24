@@ -239,8 +239,8 @@
                (->> query query-vec->map :in in-args (map str/upper-case)))]
     (cli/print-summary
      (cond-> (str " " (str/join " " (into [query-name] args)))
-             (seq desc)
-             (str "\n" desc "\n")) summary)))
+       (seq desc)
+       (str "\n" desc "\n")) summary)))
 
 (defn q
   "Run a query given it's name and args. Takes options that are documented in
