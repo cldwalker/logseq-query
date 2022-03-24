@@ -233,12 +233,14 @@
        (remove #{'% '$} in)))
 
 (defn- print-query-help
-  [query-name {:keys [query usage]} summary]
+  [query-name {:keys [query usage desc]} summary]
   (let [args (if usage
                [usage]
                (->> query query-vec->map :in in-args (map str/upper-case)))]
     (cli/print-summary
-     (str " " (str/join " " (into [query-name] args))) summary)))
+     (cond-> (str " " (str/join " " (into [query-name] args)))
+             (seq desc)
+             (str "\n" desc "\n")) summary)))
 
 (defn q
   "Run a query given it's name and args. Takes options that are documented in

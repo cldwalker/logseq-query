@@ -79,6 +79,12 @@ $ lq queries
 |            task |         lq |                  |                      Todos that contain one of the markers |
 Total: 7
 
+# Pull up query-specific help
+$ lq q content-search -h
+Usage: lq q [OPTIONS] content-search QUERY
+Full text search on :block/content
+...
+
 # Queries run by their :name
 $ lq q content-search foo
 ...
