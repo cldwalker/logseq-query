@@ -19,7 +19,10 @@
 
 (defn- add-default-options
   [args]
-  (update-in args [:options] #(merge (:default-options (util/get-config)) %)))
+  (update-in args [:options] #(merge (:default-options (util/get-config))
+                                     (when (System/getenv "LQ_GRAPH")
+                                       {:graph (System/getenv "LQ_GRAPH")})
+                                     %)))
 
 (defn q*
   [{:keys [arguments summary] :as args}]
