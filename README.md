@@ -27,7 +27,7 @@ To run `lq` with sub-second times, you have to build a variant of babashka that
 includes [datascript](https://github.com/tonsky/datascript). Steps to do this:
 
 1. Install [graalvm](https://www.graalvm.org/downloads/). On osx, graalvm can be
-installed with homebrew e.g. `brew install graalvm-ce-java11`.
+installed with homebrew e.g. `brew install --cask graalvm/tap/graalvm-ce-java11`.
 1. Clone babashka: `git clone https://github.com/babashka/babashka --recursive`
 1. Build `bb-datascript` (this takes 5-10 min): `script/build_bb_datascript.clj /path/to/babashka`
 1. Confirm it's correctly built with `bin/bb-datascript --version`
