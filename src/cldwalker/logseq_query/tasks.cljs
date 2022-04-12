@@ -1,6 +1,7 @@
 (ns cldwalker.logseq-query.tasks
   (:require [cldwalker.logseq-query.util :as util]
-            [cldwalker.logseq-query.cli :as cli]))
+            [cldwalker.logseq-query.cli :as cli]
+            [cldwalker.logseq-query.datascript :as datascript]))
 
 ;; Common q
 (defn- add-default-options
@@ -14,8 +15,7 @@
   [{:keys [arguments summary] :as args}]
   (if (empty? arguments)
     (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
-    ;; (d/q ...)
-    (prn (add-default-options args))))
+    (datascript/q (add-default-options args))))
 
 (def common-options
   [["-h" "--help" "Print help"]
@@ -43,8 +43,7 @@
   [{:keys [arguments summary] :as args}]
   (if (empty? arguments)
     (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
-    ;; (d/sq ...)
-    (prn (add-default-options args))))
+    (datascript/sq (add-default-options args))))
 
 (defn sq
   "Run a short query"

@@ -2,6 +2,7 @@
   (:require [clojure.pprint :as pprint]
             [clojure.edn :as edn]
             ["fs" :as node-fs]
+            ["child_process" :as child-process]
             [nbb.core :as nbb]
             [cldwalker.logseq-query.logseq-rules :as rules]
             [cldwalker.logseq-query.fs :as fs]))
@@ -21,6 +22,22 @@
 (defn- resource
   [file-name]
   (str (fs/parent nbb/*file*) "/../../../resources/" file-name))
+
+(defn update-keys
+  "Not in cljs yet. One day this can ripped out. Maps function `f` over the keys
+  of map `m` to produce a new map."
+  [m f]
+  (reduce-kv
+   (fn [m_ k v]
+     (assoc m_ (f k) v)) {} m))
+
+(defn sh
+  "Run shell cmd synchronously and print to inherited streams by default. Aims
+  to be similar to babashka.tasks/shell"
+  [cmd opts]
+  (child-process/spawnSync (first cmd)
+                           (clj->js (rest cmd))
+                           (clj->js (merge {:stdio "inherit"} opts))))
 
 ;; Config fns
 
