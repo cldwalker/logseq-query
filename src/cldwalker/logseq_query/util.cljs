@@ -1,9 +1,10 @@
 (ns cldwalker.logseq-query.util
   (:require [clojure.pprint :as pprint]
             [clojure.edn :as edn]
+            [clojure.string :as str]
             ["fs" :as node-fs]
             ["child_process" :as child-process]
-            [nbb.core :as nbb]
+            [nbb.classpath :as classpath]
             [cldwalker.logseq-query.logseq-rules :as rules]
             [cldwalker.logseq-query.fs :as fs]))
 
@@ -21,7 +22,9 @@
 
 (defn- resource
   [file-name]
-  (str (fs/parent nbb/*file*) "/../../../resources/" file-name))
+  (some #(when (node-fs/existsSync (str % "/" file-name))
+           (str % "/" file-name))
+        (str/split (classpath/get-classpath) #":")))
 
 (defn update-keys
   "Not in cljs yet. One day this can ripped out. Maps function `f` over the keys
@@ -66,12 +69,14 @@
   []
   (merge (get-logseq-rules)
          (-> "rules.edn" resource slurp edn/read-string)
-         (read-config-file (str (fs/expand-home "~/.lq/rules.edn")))))
+         (when-not js/process.env.LQ_DISABLE_GLOBAL
+           (read-config-file (str (fs/expand-home "~/.lq/rules.edn"))))))
 
 (defn get-all-queries
   []
   (merge (-> "queries.edn" resource slurp edn/read-string)
-         (read-config-file (str (fs/expand-home "~/.lq/queries.edn")))))
+         (when-not js/process.env.LQ_DISABLE_GLOBAL
+           (read-config-file (str (fs/expand-home "~/.lq/queries.edn"))))))
 
 (defn get-config
   []

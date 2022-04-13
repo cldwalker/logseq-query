@@ -14,7 +14,7 @@
   "Print help summary given args and opts strings"
   [args-string options-summary]
   (println (format "Usage: lq %s [OPTIONS]%s\nOptions:\n%s"
-                    js/process.env.LQ_COMMAND
+                   js/process.env.LQ_COMMAND
                    args-string
                    options-summary)))
 
