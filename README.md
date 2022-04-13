@@ -307,10 +307,10 @@ sources, running queries in CI, etc.
 
 ### REPL
 
-Interacting via a REPL is possible through `lq bb ...`. `lq bb` starts a repl
-and `lq bb socket-repl PORT` starts a socket repl to connect your editor to.
-`cldwalker.logseq-query.tasks` ns is for non query fns and
-`cldwalker.logseq-query.datascript` is for query fns.
+Interacting via a REPL is possible if this repository is cloned. Then
+`nbb-logseq repl` to start a repl and `lq bb socket-repl PORT` to start a socket
+repl to connect your editor to. `cldwalker.logseq-query.tasks` ns is for non
+query fns and `cldwalker.logseq-query.datascript` is for query fns.
 
 ### Testing
 
@@ -346,4 +346,4 @@ See LICENSE.md
 ## Additional Links
 * [Datalevin](https://github.com/juji-io/datalevin#babashka-pod) - another datalog
 db that can be scripted with babashka
-* [Zsh autocompletion for lq](https://github.com/cldwalker/dotfiles/blob/3dc9c725f265eafff0218f6c7c3719f8d0e8e317/.zsh/completions.zsh#L63-L69)
+* [Zsh autocompletion for lq](https://github.com/cldwalker/dotfiles/blob/f5f474f9a323bd9bebe3410152d8ca4967caee87/.zsh/completions.zsh#L63-L69)
