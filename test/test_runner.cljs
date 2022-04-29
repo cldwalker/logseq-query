@@ -4,12 +4,14 @@
             [cldwalker.logseq-query.queries-test]
             [cldwalker.logseq-query.datascript-test]))
 
+(defmethod t/report [::t/default :end-run-tests] [{:keys [error fail]}]
+  (if (pos? (+ error fail))
+    (js/process.exit 1)
+    (js/process.exit 0)))
+
 (defn init []
-  (let [{:keys [error fail]}
-        (t/run-tests 'cldwalker.logseq-query.datascript-test
-                     'cldwalker.logseq-query.queries-test)]
-    (when (pos? (+ error fail))
-      (throw (ex-info "Tests failed" {:babashka/exit 1})))))
+  (t/run-tests 'cldwalker.logseq-query.datascript-test
+               'cldwalker.logseq-query.queries-test))
 
 (when (= nbb/*file* (:file (meta #'init)))
   (init))
