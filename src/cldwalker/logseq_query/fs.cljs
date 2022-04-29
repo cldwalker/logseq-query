@@ -22,7 +22,7 @@ most fns return strings"
 
 (defn directory?
   [file]
-  (.isDirectory (fs/lstatSync file)))
+  (and (exists? file) (.isDirectory (fs/lstatSync file))))
 
 (defn parent
   [file]

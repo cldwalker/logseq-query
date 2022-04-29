@@ -52,4 +52,4 @@ jobs:
       - run: npm install @logseq/nbb-logseq -g
 
       - name: Run tests
-        run: LQ_DISABLE_GLOBAL=1 nbb-logseq -cp src:test:resources test/test_runner.cljs
+        run: nbb-logseq -cp src:test:resources test/test_runner.cljs
