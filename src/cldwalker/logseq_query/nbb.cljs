@@ -32,4 +32,4 @@
       (println "No such command:" cmd))))
 
 (when (= nbb.core/*file* (:file (meta #'-main)))
-  (-main *command-line-args*))
+  (-main (js->clj (.slice js/process.argv 2))))
