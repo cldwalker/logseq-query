@@ -1,5 +1,4 @@
 .cpcache
-bin/bb-datascript
 /node_modules
 /package-lock.json
 /test-notes/logseq/bak

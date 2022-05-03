@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-ROOT_DIR="$(dirname "$0")/.."
-nbb-datascript -cp $ROOT_DIR/src:$ROOT_DIR/resources $ROOT_DIR/src/cldwalker/logseq_query/nbb.cljs $@

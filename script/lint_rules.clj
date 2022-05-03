@@ -4,7 +4,14 @@
   (:require [datalog.parser.impl :as parser-impl]
             [dlint.core :as dlint]
             [clojure.string :as str]
-            [cldwalker.logseq-query.util :as util]))
+            [clojure.edn :as edn]
+            [babashka.fs :as fs]))
+
+(defn- read-config-file
+  [file]
+  (if (fs/exists? file)
+    (-> file slurp edn/read-string)
+    {}))
 
 (defn- allowed-unbound-symbol?
   [sym]
@@ -25,7 +32,7 @@
 
 (defn -main [args]
   (let [rules (->> args
-                   (map util/read-config-file)
+                   (map read-config-file)
                    (apply merge)
                    vals
                    (map :rule))
