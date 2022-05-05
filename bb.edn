@@ -15,6 +15,13 @@
           {:replace-existing true})}
 
   ;; Publish tasks copied from nbb
+  publish {:doc "Bump to version, pushes tag and lets CI publish to npm."
+           :task
+           (let [version (or (first *command-line-args*)
+                             (throw (ex-info "No version given!" {})))]
+             (shell "npm version" version)
+             (shell "git push --atomic origin main" (str "v" version)))}
+
   current-tag (->> (shell {:out :string} "git describe")
                    :out
                    str/trim
@@ -33,5 +40,5 @@
               (if ci:is-release
                 (do
                   (println "Releasing")
-                  #_(shell "npm publish"))
+                  (shell "npm publish"))
                 (println "Skipping release."))}}}
