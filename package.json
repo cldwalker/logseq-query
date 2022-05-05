@@ -1,6 +1,6 @@
 {
   "name": "logseq-query",
-  "version": "0.9.0",
+  "version": "0.9.0-alpha",
   "dependencies": {
     "@logseq/nbb-logseq": "^0.3.10"
   },
