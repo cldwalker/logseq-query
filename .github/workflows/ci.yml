@@ -8,12 +8,12 @@ jobs:
   bb-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup Babashka
         uses: turtlequeue/setup-babashka@v1.3.0
         with:
-          babashka-version: "0.7.5"
+          babashka-version: "0.8.1"
 
       - name: Datalog rules linter
         run: script/lint_rules.clj resources/rules.edn
@@ -23,7 +23,7 @@ jobs:
   clj-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-java@v2.4.0
         with:
@@ -43,9 +43,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
 
@@ -57,4 +57,20 @@ jobs:
     needs: [test, bb-lint, clj-lint]
     runs-on: ubuntu-latest
     steps:
-        - run: ls
+      - uses: actions/checkout@v3
+
+      # Setup .npmrc file to publish to GitHub Packages
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup Babashka
+        uses: turtlequeue/setup-babashka@v1.3.0
+        with:
+          babashka-version: "0.8.1"
+
+      - name: Publish package if a release tag
+        run: bb ci:publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

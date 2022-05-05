@@ -3,7 +3,9 @@
  {io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}
   me.tagaholic/dlint {:mvn/version "0.1.0"}}
  :tasks
- {copy-test-db
+ {:requires ([clojure.string :as str])
+
+  copy-test-db
   {:requires ([cldwalker.logseq-query.util :as util]
               [babashka.fs :as fs])
    :doc "Copy test-notes db from ~/.logseq/graphs to test"
