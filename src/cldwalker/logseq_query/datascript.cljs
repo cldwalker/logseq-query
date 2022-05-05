@@ -1,14 +1,14 @@
 (ns cldwalker.logseq-query.datascript
   (:require [datascript.core :as d]
             [datascript.transit :as dt]
-            [datalog.parser :as parser]
-            [babashka.fs :as fs]
             [clojure.set :as set]
             [clojure.string :as str]
             [clojure.edn :as edn]
             [clojure.pprint :as pprint]
+            [cldwalker.logseq-query.fs :as fs]
             [cldwalker.logseq-query.cli :as cli]
-            [cldwalker.logseq-query.util :as util]))
+            [cldwalker.logseq-query.util :as util :refer [update-keys]]
+            [goog.string :refer [format]]))
 
 ;; Misc util fns
 
@@ -18,7 +18,7 @@
                       ;; graph is a path
                       graph)]
     (when (fs/exists? file)
-      (-> file slurp dt/read-transit-str))))
+      (-> file util/slurp dt/read-transit-str))))
 
 (defn- get-graph-db
   [graph]
@@ -108,8 +108,7 @@
 
 (defn- print-table [rows table-command]
   (if table-command
-    (-> (util/shell {:out :string} "echo" (pr-str rows))
-        (util/shell table-command))
+    (util/sh [table-command] {:input (pr-str rows) :stdio ["pipe" "inherit" "inherit"]})
     (util/print-table rows)))
 
 (defn print-results
@@ -128,8 +127,7 @@
     :else
     (cond
       (:puget options)
-      (-> (util/shell {:out :string} "echo" (pr-str rows))
-          (util/shell "puget"))
+      (util/sh ["puget"] {:input (pr-str rows) :stdio ["pipe" "inherit" "inherit"]})
       (:raw options)
       rows
       :else
@@ -157,7 +155,7 @@
   [options f]
   (if (:silence options)
     (try (f)
-         (catch Exception e (prn (.getMessage e))))
+         (catch :default e (prn (.getMessage e))))
     (f)))
 
 (defn- get-rules-in-query
@@ -218,7 +216,6 @@
         _ (validate-args actual-args in)
         rules (get-rules-in-query query-map)
         q-args (conj actual-args rules)]
-    (parser/parse query)
     (wrap-query options
                 (fn []
                   (q-and-print-results query
@@ -264,7 +261,6 @@
   (let [{:keys [find] :as query-map} (query-vec->map query)
         db (get-graph-db (:graph options))
         rules (get-rules-in-query query-map)]
-    (parser/parse query)
     (wrap-query
      options
      (fn []

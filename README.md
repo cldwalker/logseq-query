@@ -1,51 +1,25 @@
 ## Description
 
-`lq` is a commandline tool for querying your [logseq](https://logseq.com/)
-knowledge graphs. `lq` makes it easy to define custom datalog queries and rules
-and invoke them from the commandline. Rules and queries are just [EDN
-data](https://github.com/edn-format/edn) and can be composed to make complex
-queries easy to read and write.
+`lq`, short for `logseq-query`, is a commandline tool for querying
+[logseq](https://logseq.com/) knowledge graphs. `lq` makes it easy to define
+custom datalog queries and rules and invoke them from the commandline. Rules and
+queries are just [EDN data](https://github.com/edn-format/edn) and can be
+composed to make complex queries easy to read and write.
 
 ## Setup
 
-1. Install [babashka](https://github.com/babashka/babashka#installation) >= 0.7.6
-1. Install
-[clojure](https://clojure.org/guides/getting_started#_clojure_installer_and_cli_tools)
-or [build bb-datascript](#build-bb-datascript) (commands run much faster but
-this setup is more involved)
-1. `git clone https://github.com/cldwalker/logseq-query`
-1. Recommended: To run `lq` from any directory and to use `bb-datascript`, put `bin/` on your `$PATH`:
+Install `lq` from npm:
 
-  ```sh
-  # In a shell or your .zshrc/.bashrc file
-  export PATH=$PATH:$HOME/path/to/logseq-query/bin
-  ```
-
-### Build bb-datascript
-
-To run `lq` with sub-second times, you have to build a variant of babashka that
-includes [datascript](https://github.com/tonsky/datascript). Steps to do this:
-
-1. Install [graalvm](https://www.graalvm.org/downloads/). On osx, graalvm can be
-installed with homebrew e.g. `brew install --cask graalvm/tap/graalvm-ce-java11`.
-1. Clone babashka: `git clone https://github.com/babashka/babashka --recursive`
-1. Build `bb-datascript` (this takes 5-10 min): `script/build_bb_datascript.clj /path/to/babashka`
-1. Confirm it's correctly built with `bin/bb-datascript --version`
-
-If you get stuck on a step or want to learn more about the build process, see
-[babashka's build
-doc](https://github.com/babashka/babashka/blob/master/doc/build.md).
+`npm install logseq-query -g`
 
 ## Usage
 
-For the visual learners, [check out the
-demo](https://www.youtube.com/watch?v=h8bEwKHY4rI)!
+_Note_: This section assumes basic familiarity with datalog queries. For a
+primer on them, see http://www.learndatalogtoday.org/. For the visual learners,
+[check out the demo](https://www.youtube.com/watch?v=h8bEwKHY4rI)!
 
-_Note_: This section assumes basic familiarity with datalog queries. For a primer
-on them, see http://www.learndatalogtoday.org/. Also, if `lq` is not on your
-`$PATH`, replace `lq` with `bin/lq` in the examples.
 
-`lq` can query logseq graphs in `~/.logseq`. For example:
+`lq` knows about your local logseq graphs in `~/.logseq`. For example:
 
 ```sh
 $ lq graphs
@@ -333,14 +307,14 @@ sources, running queries in CI, etc.
 
 ### REPL
 
-Interacting via a REPL is possible through `lq bb ...`. `lq bb` starts a repl
-and `lq bb socket-repl PORT` starts a socket repl to connect your editor to.
-`cldwalker.logseq-query.tasks` ns is for non query fns and
-`cldwalker.logseq-query.datascript` is for query fns.
+Interacting via a REPL is possible if this repository is cloned. Then
+`nbb-logseq repl` to start a repl and `lq bb socket-repl PORT` to start a socket
+repl to connect your editor to. `cldwalker.logseq-query.tasks` ns is for non
+query fns and `cldwalker.logseq-query.datascript` is for query fns.
 
 ### Testing
 
-Run all tests with `clj -X:bb:test`.
+Run all tests with `nbb-logseq -cp src:test:resources test/test_runner.cljs`.
 
 End to end query tests are in `cldwalker.logseq-query.queries-test`. These tests
 query against the logseq graph `test-notes`. Each query/test has its own pages
@@ -364,12 +338,12 @@ See LICENSE.md
 ## Credits
 * 🪵 [Logseq](https://github.com/logseq/logseq) - For being the fastest,
   user-friendliest triples editor I've seen yet
-* 🔥 [Babashka](https://github.com/babashka/babashka) - For making blazing
-  Clojure CLIs possible
+* 🔥 [Nbb](https://github.com/babashka/nbb) - Opening up blazing ClojureScript
+  CLIs to the NodeJS ecosystem
 * 📀 [Datascript](https://github.com/tonsky/datascript) - For bringing a modern,
   open-source datalog to the frontend and backend
 
 ## Additional Links
 * [Datalevin](https://github.com/juji-io/datalevin#babashka-pod) - another datalog
 db that can be scripted with babashka
-* [Zsh autocompletion for lq](https://github.com/cldwalker/dotfiles/blob/3dc9c725f265eafff0218f6c7c3719f8d0e8e317/.zsh/completions.zsh#L63-L69)
+* [Zsh autocompletion for lq](https://github.com/cldwalker/dotfiles/blob/f5f474f9a323bd9bebe3410152d8ca4967caee87/.zsh/completions.zsh#L63-L69)

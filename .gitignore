@@ -1,5 +1,6 @@
 .cpcache
-bin/bb-datascript
+/node_modules
+/package-lock.json
 /test-notes/logseq/bak
 /test-notes/logseq/config.edn
 /test-notes/logseq/pages-metadata.edn

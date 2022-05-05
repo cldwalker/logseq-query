@@ -1,39 +1,21 @@
 (ns cldwalker.logseq-query.tasks
-  "Run lq's main tasks. Call out to bb-datascript or clojure depending on what
-  user has installed"
   (:require [cldwalker.logseq-query.util :as util]
             [cldwalker.logseq-query.cli :as cli]
-            [babashka.tasks :refer [clojure]]))
+            [cldwalker.logseq-query.datascript :as datascript]))
 
-(defn rules
-  "List all rules"
-  []
-  (util/print-table
-   (->> (util/get-all-rules)
-        (map (fn [[rule-name m]]
-               (hash-map :name (name rule-name)
-                         :desc (:desc m)
-                         :args (pr-str (first (:rule m)))
-                         :namespace (namespace rule-name)))))
-   :fields [:name :namespace :args :desc]))
-
+;; Common q
 (defn- add-default-options
   [args]
   (update-in args [:options] #(merge (:default-options (util/get-config))
-                                     (when (System/getenv "LQ_GRAPH")
-                                       {:graph (System/getenv "LQ_GRAPH")})
+                                     (when js/process.env.LQ_GRAPH
+                                       {:graph js/process.env.LQ_GRAPH})
                                      %)))
 
 (defn q*
   [{:keys [arguments summary] :as args}]
-  (cond (empty? arguments)
-        (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
-        (System/getenv "BABASHKA_DATASCRIPT")
-        ((requiring-resolve 'cldwalker.logseq-query.datascript/q)
-         (add-default-options args))
-        :else
-        (clojure (format "-X:bb cldwalker.logseq-query.datascript/q '%s'"
-                         (pr-str (add-default-options args))))))
+  (if (empty? arguments)
+    (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
+    (datascript/q (add-default-options args))))
 
 (def common-options
   [["-h" "--help" "Print help"]
@@ -52,26 +34,35 @@
 
 (defn q
   "Run a named query"
-  [& args]
+  [args]
   (cli/run-command q* args q-cli-options))
 
 (def sq-cli-options common-options)
 
 (defn sq*
-  [{:keys [options arguments summary] :as args}]
-  (cond (or (:help options) (empty? arguments))
-        (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
-        (System/getenv "BABASHKA_DATASCRIPT")
-        ((requiring-resolve 'cldwalker.logseq-query.datascript/sq)
-         (add-default-options args))
-        :else
-        (clojure (format "-X:bb cldwalker.logseq-query.datascript/sq '%s'"
-                         (pr-str (add-default-options args))))))
+  [{:keys [arguments summary] :as args}]
+  (if (empty? arguments)
+    (cli/print-summary " QUERY [& QUERY-ARGS]" summary)
+    (datascript/sq (add-default-options args))))
 
 (defn sq
   "Run a short query"
-  [& args]
+  [args]
   (cli/run-command sq* args sq-cli-options))
+
+;; Non query commands
+
+(defn rules
+  "List all rules"
+  []
+  (util/print-table
+   (->> (util/get-all-rules)
+        (map (fn [[rule-name m]]
+               (hash-map :name (name rule-name)
+                         :desc (:desc m)
+                         :args (pr-str (first (:rule m)))
+                         :namespace (namespace rule-name)))))
+   :fields [:name :namespace :args :desc]))
 
 (defn graphs
   "List all graphs"

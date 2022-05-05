@@ -4,7 +4,14 @@
   (:require [datalog.parser :as parser]
             [dlint.core :as dlint]
             [clojure.string :as str]
-            [cldwalker.logseq-query.util :as util]))
+            [clojure.edn :as edn]
+            [babashka.fs :as fs]))
+
+(defn- read-config-file
+  [file]
+  (if (fs/exists? file)
+    (-> file slurp edn/read-string)
+    {}))
 
 (defn- lint-query [[query-name {:keys [query]}]]
   (try (parser/parse query)
@@ -29,7 +36,7 @@
 
 (defn -main [args]
   (let [queries (->> args
-                     (map util/read-config-file)
+                     (map read-config-file)
                      (apply merge)
                      (remove (fn [[_k v]] (nil? (:query v)))))
         invalid-queries (->> queries

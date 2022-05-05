@@ -11,7 +11,8 @@
                               (reset! error args)
                               (throw (ex-info "EXIT" {})))]
       (try (ld/q args)
-           (catch clojure.lang.ExceptionInfo _))
+           #?(:cljs (catch :default _)
+              :default (catch clojure.lang.ExceptionInfo _)))
       (first @error))))
 
 (deftest q-errors
