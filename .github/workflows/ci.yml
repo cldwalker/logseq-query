@@ -53,3 +53,8 @@ jobs:
 
       - name: Run tests
         run: nbb-logseq -cp src:test:resources test/test_runner.cljs
+  publish:
+    needs: [test, bb-lint, clj-lint]
+    runs-on: ubuntu-latest
+    steps:
+        - run: ls

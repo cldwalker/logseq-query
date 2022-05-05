@@ -6,5 +6,18 @@
   },
   "bin": {
     "lq": "index.mjs"
-  }
+  },
+  "description": "Query logseq graphs easily",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cldwalker/logseq-query"
+  },
+  "keywords": [
+    "logseq",
+    "clojurescript",
+    "datalog",
+    "datascript",
+    "nbb"
+  ],
+  "license": "MIT",
 }

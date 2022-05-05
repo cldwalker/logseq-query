@@ -10,4 +10,26 @@
    :task (fs/copy
           (util/get-graph-path "test-notes")
           "test/cldwalker/logseq_query/test-notes.json"
-          {:replace-existing true})}}}
+          {:replace-existing true})}
+
+  ;; Publish tasks copied from nbb
+  current-tag (->> (shell {:out :string} "git describe")
+                   :out
+                   str/trim
+                   (re-matches (re-pattern "^v\\d+\\.\\d+\\.\\d+")))
+
+  current-branch (->> (shell {:out :string} "git rev-parse --abbrev-ref HEAD")
+                      :out
+                      str/trim)
+
+  ci:is-release {:depends [current-tag current-branch]
+                 :task (and current-tag (= "main" current-branch))}
+
+  ci:publish {:doc "Publishes release build to npm"
+              :depends [ci:is-release]
+              :task
+              (if ci:is-release
+                (do
+                  (println "Releasing")
+                  #_(shell "npm publish"))
+                (println "Skipping release."))}}}
