@@ -16,7 +16,7 @@ jobs:
           babashka-version: "0.8.1"
 
       - name: Datalog rules linter
-        run: script/lint_rules.clj resources/rules.edn
+        run: bb lint:rules resources/rules.edn
 
       - name: Datalog queries linter
         run: script/lint_queries.clj resources/queries.edn

@@ -1,7 +1,12 @@
 {:paths ["src" "resources"]
  :deps
- {io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}
-  me.tagaholic/dlint {:mvn/version "0.1.0"}}
+ { ;; for lint-queries
+  io.lambdaforge/datalog-parser {:mvn/version "0.1.11"}
+  me.tagaholic/dlint {:mvn/version "0.1.0"}
+  logseq/bb-tasks
+  #_{:local/root "../../work/bb-tasks"}
+  {:git/url "https://github.com/logseq/bb-tasks"
+   :git/sha "abb32ccd26405d56fd28a29d56f3cb902b8c4334"}}
  :tasks
  {:requires ([clojure.string :as str])
 
@@ -13,6 +18,22 @@
           (util/get-graph-path "test-notes")
           "test/cldwalker/logseq_query/test-notes.json"
           {:replace-existing true})}
+
+  lint:rules
+  {:requires ([logseq.bb-tasks.lint.datalog :as datalog]
+              [babashka.fs :as fs]
+              [clojure.edn :as edn])
+   :doc "Lint datalog rules for parsability and unbound variables"
+   :task (let [read-config-file (fn [file]
+                                  (if (fs/exists? file)
+                                    (-> file slurp edn/read-string)
+                                    {}))]
+           (datalog/lint-rules
+            (->> *command-line-args*
+                 (map read-config-file)
+                 (apply merge)
+                 vals
+                 (map :rule))))}
 
   ;; Publish tasks copied from nbb
   publish {:doc "Bump to version, pushes tag and lets CI publish to npm."
