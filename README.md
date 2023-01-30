@@ -108,7 +108,7 @@ allows tools like [babashka](https://github.com/babashka/babashka) to transform
 results easily e.g.
 
 ```sh
-$ lq q property type digital-garden | bb '(->> *input* (map #(-> % :block/properties :url)))'                                                                         
+$ lq q property type digital-garden | bb '(->> *input* (map #(-> % :block/properties :url)))'
 ("https://note.xuanwo.io/#/page/database" "https://kvistgaard.github.io/sparql/" "https://zettelkasten.sorenbjornstad.com/")
 ```
 
@@ -153,19 +153,19 @@ Some examples:
 
 ```sh
 # A single where clause can be specified as is
-$ lq sq '(content-search ?b "github.com/")'
+$ lq sq '(block-content ?b "github.com/")'
 ...
 
 # For multiple where clauses, wrap it in a vector
-$ lq sq '[(content-search ?b "github.com/") (task ?b #{"DONE"})]'
+$ lq sq '[(block-content ?b "github.com/") (task ?b #{"DONE"})]'
 ...
 
 # Queries without a :find default to `(pull ?b [*])`. This can be overridden with an explicit :find
-$ lq sq '[:find ?b :where (content-search ?b "github.com/") (task ?b #{"DONE"})]'
+$ lq sq '[:find ?b :where (block-content ?b "github.com/") (task ?b #{"DONE"})]'
 ...
 
 # To print what the full query looks like
-$ lq sq '[:find ?b :where (content-search ?b "github.com/") (task ?b #{"DONE"})]' -e
+$ lq sq '[:find ?b :where (block-content ?b "github.com/") (task ?b #{"DONE"})]' -e
 ```
 
 The `sq` command supports most of the `q` options. For the full list of
@@ -180,7 +180,7 @@ the query from the last section:
 
 ```sh
 # Copies the last command's output to clipboard in osx
-$ lq sq '[:find ?b :where (content-search ?b "github.com/") (task ?b #{"DONE"})]' -n | pbcopy
+$ lq sq '[:find ?b :where (block-content ?b "github.com/") (task ?b #{"DONE"})]' -n | pbcopy
 ```
 
 In `queries.edn`, paste the clipboard and add a `:desc`:
@@ -192,7 +192,7 @@ In `queries.edn`, paste the clipboard and add a `:desc`:
  [:find
   (pull ?b [*])
   :where
-  (content-search ?b "github.com/")
+  (block-content ?b "github.com/")
   (task ?b #{"DONE"})]
  :desc "Find github tasks"}
 ```
@@ -211,7 +211,7 @@ them with `:in` and `:args-transform` keys respectively. For example:
   ;; and refer to database and rules
   :in $ ?markers %
   :where
-  (content-search ?b "github.com/")
+  (block-content ?b "github.com/")
   (task ?b ?markers)]
  :args-transform (fn [args]
                    (set (map (comp clojure.string/upper-case name) args)))
@@ -221,7 +221,7 @@ them with `:in` and `:args-transform` keys respectively. For example:
 This query can now be called with arguments e.g. `lq q github-tasks todo doing`.
 
 It's worth noting that queries can use any of the rules that come with `lq` e.g.
-`content-search` as well as _any_ you define. Just _use_ the rules and `lq`
+`block-content` as well as _any_ you define. Just _use_ the rules and `lq`
 will figure out how to pull the rules into your query.
 
 ### Create a rule
@@ -238,7 +238,7 @@ other queries:
 :cldwalker/github-task
 {:rule
  [(github-task ?b ?markers)
-  (content-search ?b "github.com/")
+  (block-content ?b "github.com/")
   (task ?b ?markers)]
 :desc "Github tasks"]}
 ```
